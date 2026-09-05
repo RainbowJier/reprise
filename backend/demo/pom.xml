@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.fullstack</groupId>
+        <artifactId>backend</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>demo</artifactId>
+    <packaging>pom</packaging>
+    <name>demo</name>
+    <description>服务工程 - DDD 七层（对应 fjgtkj-2026-scenes 等 DDD 服务）</description>
+
+    <modules>
+        <module>demo-client</module>
+        <module>demo-shared</module>
+        <module>demo-domain</module>
+        <module>demo-infrastructure</module>
+        <module>demo-application</module>
+        <module>demo-adapter</module>
+        <module>demo-starter</module>
+    </modules>
+</project>

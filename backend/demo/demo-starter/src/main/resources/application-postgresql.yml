@@ -1,0 +1,9 @@
+# PostgreSQL 环境配置：启动时追加 --spring.profiles.active=postgresql
+# 需先建库：CREATE DATABASE full_stack_demo;
+# 表结构与种子数据由各场景自行管理，PostgreSQL 环境请手工初始化。
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/full_stack_demo
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: change-me

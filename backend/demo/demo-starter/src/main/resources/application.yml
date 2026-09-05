@@ -1,0 +1,27 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: demo-backend
+
+  # 默认使用 H2 内存数据库，无需安装任何数据库即可启动
+  # 切换 PostgreSQL：修改 application-postgresql.yml 后以 --spring.profiles.active=postgresql 启动
+  datasource:
+    url: jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+mybatis-plus:
+  global-config:
+    banner: false
+
+app:
+  cors:
+    # 允许的前端开发服务器地址，多个用逗号分隔。
+    # 5174 为 Vite 端口顺延：本机 5173 常被其他程序占用时 Vite 自动换端口，
+    # 经代理的 POST 请求仍携带 Origin 头，不在白名单内会被 CORS 拒绝（403）。
+    allowed-origins: http://localhost:5173,http://localhost:5174,http://localhost:3000

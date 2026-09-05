@@ -1,0 +1,81 @@
+name: fullstack-feature
+version: 5.2.0
+description: >-
+  Vue + Spring Boot 全栈新功能设计与开发工作流。默认按 Spring Boot 后端（Maven/Gradle、JPA/MyBatis）
+  + Vue 前端（Vite/Webpack、vue-router、Pinia/Vuex、组件库）探测与落位，项目规范优先；
+  先探测项目事实，再按需启用架构、后端、前端、数据库、API、集成和测试 profile；
+  契约先行，前后端并行，联调独立验证；纯后端/纯前端仓库自动裁剪另一侧任务。
+  触发词："新功能"、"需求设计"、"功能开发"。
+arguments:
+  - $ARGUMENTS
+  - $DOC_PATH
+  - $DISPLAY_NAME
+  - $FILE_SLUG
+  - $TASK_PREFIX
+  - $AUTO_MODE
+  - $FRONTEND_ROOT
+entry:
+  interactive_when: 触发时未提供需求描述（只有触发词或空参数）
+  scenario_menu:
+    - 新增功能 → 阶段一：需求分析与设计
+    - 继续开发 → 读取已有 tasks/ 恢复状态，从阶段三断点继续
+    - 加/改字段 → field-add 特殊流程
+    - 修改行为 → 读取已有设计与任务，新增增量任务执行
+    - 修复缺陷 → 直接修复，修复与验证记录回写对应任务
+  then: 选定场景后按场景追问最少必要信息；场景 2-5 必问产物路径，用户给不出时先按命名约定探测再询问；已提供的信息不重复追问；带完整需求触发时跳过菜单
+always_load:
+  - static/core/stance.md
+profiles:
+  - name: architecture
+    detect: Spring Boot 单体或多模块 Maven/Gradle reactor 的分层边界，或前端按页面/feature 组织的结构
+  - name: backend
+    detect: 存在 pom.xml/build.gradle 与 Spring Boot 依赖、Java 源码（@SpringBootApplication、starter）
+  - name: frontend
+    detect: 存在 Vue 工程（package.json 含 vue；vite/webpack/vue 配置、src/views、路由与状态管理）；同时探测前端工程根目录（$FRONTEND_ROOT）及其 design-system/ 参考目录状态
+  - name: database
+    detect: 功能涉及持久化，且已确认真实存储、ORM（JPA/MyBatis）与数据变更策略
+  - name: api
+    detect: 存在 REST（Spring Controller）或 GraphQL/RPC/事件等对外或内部契约
+  - name: integration
+    detect: 存在 HTTP client（RestTemplate/WebClient/OpenFeign）、消息队列、SDK、AI/数据处理的实际依赖
+  - name: testing
+    detect: 项目存在 lint/unit/integration/e2e/build/CI 等验证命令（mvn/gradle、npm scripts）
+phases:
+  - name: 项目探测、需求分析与设计
+    fragment: static/fragments/analysis.md
+    requires_confirm: true
+    auto_bypass: true
+  - name: 任务拆分
+    fragment: static/fragments/task-decomposition.md
+    requires_confirm: true
+    auto_bypass: true
+  - name: 增量开发与验证
+    fragment: static/fragments/development.md
+    requires_confirm: false
+special_flows:
+  - name: 已有字段或 Schema 变更
+    fragment: static/fragments/field-add.md
+    when: 用户要求向已有模型/表/schema/配置/API 类型增改字段，或任一阶段探测到此类变更
+    entry: 任意阶段切入；先读取已有设计文档与 tasks/ 目录，不修改历史任务
+    return: 新增增量任务并入阶段三按依赖执行，完成后按 field-add 输出格式报告
+    requires_confirm: conditional
+    confirm_when: 变更影响既有契约、需生成可执行 DDL 或数据回填时必须确认；纯文档级设计更新可不确认
+    auto_bypass: true # 按核心立场自检放行；DDL/兼容未知时任务保持 blocked
+references:
+  on_demand:
+    - condition: 项目探测命中部署处附带的项目 profile（references/profiles/ 下的项目文件）
+      path: references/profiles/<project>.md
+    - condition: 为目标项目编写新的术语映射 profile
+      path: references/profiles/NOETS.md
+    - condition: 功能设计文档模板（交互式 HTML）
+      path: references/templates/design-doc.html
+    - condition: 数据库或 Schema 变更参考模板
+      path: references/templates/sql.md
+    - condition: Vue 与 Spring Boot 架构与实现模式速查
+      path: references/code-conventions.md
+    - condition: 前端 profile 已启用且 $FRONTEND_ROOT/design-system/ 不存在
+      path: static/fragments/design-system-init.md
+    - condition: 生成 design-system 参考目录的固定模板
+      path: references/templates/design-system/
+    - condition: 任务文件模板
+      path: references/templates/task.md

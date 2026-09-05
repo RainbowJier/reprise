@@ -1,0 +1,23 @@
+# 测试专用配置：同名文件会遮蔽主 application.yml，需完整覆盖
+spring:
+  application:
+    name: demo-backend
+
+  datasource:
+    # 每个测试上下文使用独立的 H2 库，避免多上下文共享同名内存库相互污染
+    url: jdbc:h2:mem:${random.uuid};DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+server:
+  servlet:
+    context-path: /api
+
+mybatis-plus:
+  global-config:
+    banner: false
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173
