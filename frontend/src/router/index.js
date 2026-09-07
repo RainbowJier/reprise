@@ -1,14 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import AdminLayout from '@/layouts/AdminLayout.vue'
+import { isLoggedIn } from '@/api/authTokens'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/RegisterView.vue'),
+    },
+    {
+      // 管理端布局：左侧场景菜单 + 右侧详情，登录后才可进入
       path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: AdminLayout,
+      redirect: '/scenario/01-auth',
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: 'scenario/01-auth',
+          name: 'scenario-01-auth',
+          component: () => import('@/views/scenario/AuthView.vue'),
+          meta: { title: '用户登录与认证' },
+        },
+        {
+          path: 'scenario/01-auth/doc',
+          name: 'scenario-01-auth-doc',
+          component: () => import('@/views/scenario/DocView.vue'),
+          props: { scenarioId: '01-auth' },
+          meta: { title: '用户登录与认证 · 技术文档' },
+        },
+        // 后续场景：详情页 + /doc 文档页成对追加，并在 config/scenarios.js、config/scenarioDocs.js 登记
+      ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
     },
   ],
+})
+
+router.beforeEach((to) => {
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    return { path: '/login', query: { redirect: to.fullPath } }
+  }
 })
 
 export default router

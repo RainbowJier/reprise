@@ -19,7 +19,8 @@ import jakarta.validation.ConstraintViolationException;
  * MVC 全局异常处理器。
  * <p>
  * 相比 fjgtkj-2026 原实现，移除了 Sa-Token（NotLogin/NotPermission/NotRole）与
- * 验证码（CaptchaException）分支：demo 未接入认证体系。
+ * 验证码（CaptchaException）分支：demo 采用自研 JWT 过滤器（场景 01），
+ * 认证失败在 JwtAuthFilter 内直接写响应，不经过本处理器。
  */
 @Slf4j
 @RestControllerAdvice

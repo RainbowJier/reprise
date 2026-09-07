@@ -15,11 +15,21 @@ spring:
     username: sa
     password: ""
 
+  sql:
+    init:
+      # Windows 默认平台编码（GBK）读 UTF-8 脚本会乱码，显式指定
+      encoding: UTF-8
+
 mybatis-plus:
   global-config:
     banner: false
 
 app:
+  jwt:
+    # HS256 密钥，须 ≥ 32 字节；生产环境必须替换并通过环境变量注入
+    secret: demo-jwt-secret-0123456789abcdef-change-me
+    access-expire-seconds: 1800
+    refresh-expire-seconds: 604800
   cors:
     # 允许的前端开发服务器地址，多个用逗号分隔。
     # 5174 为 Vite 端口顺延：本机 5173 常被其他程序占用时 Vite 自动换端口，

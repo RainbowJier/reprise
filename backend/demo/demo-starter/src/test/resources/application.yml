@@ -10,6 +10,10 @@ spring:
     username: sa
     password: ""
 
+  sql:
+    init:
+      encoding: UTF-8
+
 server:
   servlet:
     context-path: /api
@@ -19,5 +23,9 @@ mybatis-plus:
     banner: false
 
 app:
+  jwt:
+    secret: demo-jwt-secret-0123456789abcdef-change-me
+    access-expire-seconds: 1800
+    refresh-expire-seconds: 604800
   cors:
     allowed-origins: http://localhost:5173

@@ -1,129 +1,72 @@
-:root {
-  --bg: #f6f7f9;
-  --card-bg: #ffffff;
-  --text: #1f2329;
-  --text-secondary: #646a73;
-  --border: #e5e6eb;
-  --primary: #3370ff;
-  --primary-hover: #2b5fd9;
-  --success: #34c724;
-  --danger: #f54a45;
-  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/*
+ * 场景 01 起，样式体系为 Tailwind v4 utility-first。
+ * @theme 值由原 :root CSS 变量整体迁移（色板不变），映射表见 frontend/design-system/tokens.md。
+ */
+@theme {
+  --color-canvas: #f6f7f9;
+  --color-ink: #1f2329;
+  --color-ink-secondary: #646a73;
+  --color-line: #e5e6eb;
+  --color-primary: #3370ff;
+  --color-primary-hover: #2b5fd9;
+  --color-success: #34c724;
+  --color-danger: #f54a45;
+  --color-code-bg: #f0f1f3;
+  /* RuoYi 风格管理端侧栏（场景 01 后基座布局） */
+  --color-sidebar: #304156;
+  --color-sidebar-hover: #263445;
+  --color-sidebar-active: #1f2d3d;
+  --color-sidebar-text: #bfcbd9;
+  --radius-card: 10px;
+  --font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+
+  /* 动效 token（场景 01 交互优化） */
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-fade-up: fade-up 0.35s ease-out both;
+
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-3px); }
+    40%, 60% { transform: translateX(3px); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  /* 全局按钮微交互：颜色/变形过渡 + 按压缩放 */
+  button {
+    @apply transition-all duration-150 active:scale-[0.97];
+  }
+
+  /* 无障碍：系统开启"减弱动态效果"时降级 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
+/* 弹层过渡（用户下拉等，配 <Transition name="pop">；同步组件无懒加载，状态机可靠） */
+.pop-enter-active,
+.pop-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
-
-.layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 16px 32px;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-}
-
-.brand {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.tagline {
-  color: var(--text-secondary);
-  font-size: 13px;
-}
-
-.main {
-  flex: 1;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 32px 24px;
-}
-
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-bottom: 16px;
-}
-
-.card h2 {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.muted {
-  color: var(--text-secondary);
-  font-size: 13px;
-}
-
-button {
-  border: none;
-  border-radius: 6px;
-  background: var(--primary);
-  color: #fff;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: var(--primary-hover);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot.up {
-  background: var(--success);
-}
-
-.dot.down {
-  background: var(--danger);
-}
-
-.error {
-  color: var(--danger);
-  font-size: 13px;
-}
-
-code {
-  background: #f0f1f3;
-  border-radius: 4px;
-  padding: 1px 6px;
-  font-size: 13px;
+.pop-enter-from,
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-4px);
 }

@@ -20,9 +20,29 @@
             <groupId>com.fullstack</groupId>
             <artifactId>demo-domain</artifactId>
         </dependency>
+        <!-- 场景 01：实现 client 层 TokenProvider 端口（同 demo-client README 的 Gateway 实现 Feign 契约之模式） -->
+        <dependency>
+            <groupId>com.fullstack</groupId>
+            <artifactId>demo-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.fullstack</groupId>
             <artifactId>common-mybatis-plus</artifactId>
+        </dependency>
+        <!-- 场景 01：JWT 签发与解析（api 编译 / impl+jackson 运行） -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -12,7 +12,7 @@
 
 | #   | 场景                       | 目录                                       | 状态  | 笔记 |
 | --- | -------------------------- | ------------------------------------------ | ----- | ---- |
-| 01  | 用户登录与认证（JWT/SSO）  | `scenarios/01-auth`                        | ✅ 基座已就绪 | —    |
+| 01  | 用户登录与认证（JWT/SSO）  | `scenarios/01-auth`                        | ✅ 已完成 | [NOTES.md](scenarios/01-auth/NOTES.md) |
 | 02  | 短链接服务                 | `scenarios/02-short-link`                  | ☐ 规划 | —    |
 | 03  | 秒杀 / 高并发抢购          | `scenarios/03-flash-sale`                  | ☐ 规划 | —    |
 | 04  | Feed 流（推 / 拉 / 推拉结合） | `scenarios/04-feed`                     | ☐ 规划 | —    |

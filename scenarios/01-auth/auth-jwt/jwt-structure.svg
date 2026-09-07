@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 390" width="820" height="390"
+     font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">
+  <rect width="820" height="390" fill="#FFFFFF"/>
+  <rect x="0.5" y="0.5" width="819" height="389" fill="none" stroke="#D9DFE8"/>
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#00A087"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 顶部：完整 token 串 ===== -->
+  <text x="410" y="58" text-anchor="middle" font-size="12" fill="#6B7280">Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.SflKxwRJaMF4Nc…</text>
+
+  <!-- 引线：token 串下连三段 -->
+  <g stroke="#9AA4B2" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="140" y1="66" x2="140" y2="88"/>
+    <line x1="405" y1="66" x2="405" y2="88"/>
+    <line x1="675" y1="66" x2="675" y2="88"/>
+  </g>
+
+  <!-- ===== 中央三段 ===== -->
+  <rect x="40"  y="92" width="200" height="100" rx="6" fill="#4DBBD5" fill-opacity="0.10" stroke="#4DBBD5" stroke-width="1.5"/>
+  <rect x="255" y="92" width="300" height="100" rx="6" fill="#3C5488" fill-opacity="0.10" stroke="#3C5488" stroke-width="1.5"/>
+  <rect x="570" y="92" width="210" height="100" rx="6" fill="#F39B7F" fill-opacity="0.10" stroke="#F39B7F" stroke-width="1.5"/>
+  <circle cx="247" cy="142" r="3" fill="#6B7280"/>
+  <circle cx="562" cy="142" r="3" fill="#6B7280"/>
+
+  <text x="140" y="116" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">HEADER</text>
+  <text x="140" y="140" text-anchor="middle" font-size="11" fill="#6B7280">{ alg: HS256, typ: JWT }</text>
+  <text x="140" y="158" text-anchor="middle" font-size="11" fill="#6B7280">Base64URL 编码</text>
+
+  <text x="405" y="116" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">PAYLOAD</text>
+  <g text-anchor="middle" font-size="11" fill="#6B7280">
+    <text x="405" y="136">sub = userId · username</text>
+    <text x="405" y="152">type = access / refresh</text>
+    <text x="405" y="168">iat 签发 · exp 过期</text>
+    <text x="405" y="184">（不加密，勿放敏感信息）</text>
+  </g>
+
+  <text x="675" y="116" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">SIGNATURE</text>
+  <g text-anchor="middle" font-size="11" fill="#6B7280">
+    <text x="675" y="140">HMAC-SHA256</text>
+    <text x="675" y="158">secret ≥ 32 字节</text>
+    <text x="675" y="176">仅服务端持有</text>
+  </g>
+
+  <!-- ===== 下方注释 ===== -->
+  <g stroke="#9AA4B2" stroke-width="1">
+    <line x1="140" y1="192" x2="140" y2="202"/>
+    <line x1="405" y1="192" x2="405" y2="202"/>
+    <line x1="675" y1="192" x2="675" y2="202"/>
+  </g>
+  <circle cx="140" cy="192" r="2.5" fill="#9AA4B2"/>
+  <circle cx="405" cy="192" r="2.5" fill="#9AA4B2"/>
+  <circle cx="675" cy="192" r="2.5" fill="#9AA4B2"/>
+  <text x="140" y="218" text-anchor="middle" font-size="12" fill="#6B7280">声明签名算法</text>
+  <text x="405" y="214" text-anchor="middle" font-size="12" fill="#6B7280">type 区分双 token，exp 控制有效期</text>
+  <text x="405" y="232" text-anchor="middle" font-size="12" fill="#6B7280">（access 30 分钟 / refresh 7 天）</text>
+  <text x="675" y="214" text-anchor="middle" font-size="12" fill="#6B7280">对前两段整体签名</text>
+  <text x="675" y="232" text-anchor="middle" font-size="12" fill="#6B7280">防篡改的凭据</text>
+
+  <!-- 红点警示（唯一红色元素） -->
+  <circle cx="272" cy="256" r="3.5" fill="#E64B35"/>
+  <text x="282" y="261" font-size="12" fill="#252A33">任一段被篡改 → 验签失败 → 返回 code 401</text>
+
+  <!-- ===== 底部：验签流程 ===== -->
+  <text x="410" y="288" text-anchor="middle" font-size="12" font-weight="600" fill="#252A33">服务端验签流程（每请求一次）</text>
+  <g stroke-width="1.5">
+    <rect x="54"  y="298" width="160" height="44" rx="6" fill="#3C5488" fill-opacity="0.10" stroke="#3C5488"/>
+    <rect x="238" y="298" width="160" height="44" rx="6" fill="#3C5488" fill-opacity="0.10" stroke="#3C5488"/>
+    <rect x="422" y="298" width="160" height="44" rx="6" fill="#3C5488" fill-opacity="0.10" stroke="#3C5488"/>
+    <rect x="606" y="298" width="160" height="44" rx="6" fill="#00A087" fill-opacity="0.12" stroke="#00A087"/>
+  </g>
+  <g text-anchor="middle" font-size="13" fill="#252A33">
+    <text x="134" y="325">重算 HMAC</text>
+    <text x="318" y="325">比对签名</text>
+    <text x="502" y="325">校验 exp · type</text>
+    <text x="686" y="325">通过 · 放行</text>
+  </g>
+  <g stroke="#5A6472" stroke-width="1.5">
+    <line x1="218" y1="320" x2="232" y2="320" marker-end="url(#arrowGray)"/>
+    <line x1="402" y1="320" x2="416" y2="320" marker-end="url(#arrowGray)"/>
+    <line x1="586" y1="320" x2="600" y2="320" marker-end="url(#arrowGray)"/>
+  </g>
+
+  <text x="410" y="372" text-anchor="middle" font-size="12" fill="#6B7280">图 3｜JWT 三段结构与 HS256 验签原理</text>
+</svg>
