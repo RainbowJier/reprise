@@ -36,6 +36,19 @@ const router = createRouter({
           props: { scenarioId: '01-auth' },
           meta: { title: '用户登录与认证 · 技术文档' },
         },
+        {
+          path: 'scenario/03-flash-sale',
+          name: 'scenario-03-flash-sale',
+          component: () => import('@/views/scenario/FlashSaleView.vue'),
+          meta: { title: '秒杀抢购' },
+        },
+        {
+          path: 'scenario/03-flash-sale/doc',
+          name: 'scenario-03-flash-sale-doc',
+          component: () => import('@/views/scenario/DocView.vue'),
+          props: { scenarioId: '03-flash-sale' },
+          meta: { title: '秒杀抢购 · 技术文档' },
+        },
         // 后续场景：详情页 + /doc 文档页成对追加，并在 config/scenarios.js、config/scenarioDocs.js 登记
       ],
     },

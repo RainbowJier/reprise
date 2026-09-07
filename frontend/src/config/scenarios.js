@@ -4,7 +4,7 @@
 export const scenarios = [
   { id: '01-auth', no: '01', name: '用户登录与认证', desc: 'JWT 双 token 无感续期', path: '/scenario/01-auth', enabled: true },
   { id: '02-short-link', no: '02', name: '短链接服务', path: '/scenario/02-short-link', enabled: false },
-  { id: '03-flash-sale', no: '03', name: '秒杀抢购', path: '/scenario/03-flash-sale', enabled: false },
+  { id: '03-flash-sale', no: '03', name: '秒杀抢购', desc: '高并发防超卖三层防线', path: '/scenario/03-flash-sale', enabled: true },
   { id: '04-feed', no: '04', name: 'Feed 流', path: '/scenario/04-feed', enabled: false },
   { id: '05-im', no: '05', name: '即时通讯', path: '/scenario/05-im', enabled: false },
   { id: '06-upload', no: '06', name: '文件上传', path: '/scenario/06-upload', enabled: false },

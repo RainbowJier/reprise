@@ -58,7 +58,8 @@ npm run build    # 生产构建，也是目前唯一的前端校验手段（无 
 - 后端 context-path 是 `/api`，前端 Vite 代理不做 rewrite——接口路径一律从 `/api` 起头。
 - CORS 白名单在 `app.cors.allowed-origins`（application.yml）：Vite 在 5173 被占用时会自动顺延到 5174，白名单已含 5173/5174/3000；新增前端端口需同步加白，否则代理 POST 会被 403 拒绝。
 - `scenarios/` 只放文档笔记（模板 `docs/NOETS.md`，复制后命名 `NOTES.md`），不要在其中创建前后端工程；场景状态变化时同步更新 README 的场景索引表。
-- 认证（场景 01 起）：`/user/**` 需携带 `Authorization: Bearer <accessToken>`（`JwtAuthFilter` 只拦该路径），`/auth/**`、`/health` 为白名单；业务 401 统一为 HTTP 200 + body `code=401`。JWT 配置在 `app.jwt.*`（主/测试两份 yml 都要同步），种子账号 demo / demo123456；登录冒烟脚本 `bash scenarios/01-auth/verify.sh`。
+- 认证（场景 01 起）：`/user/**`、`/flash/**`（场景 03 起）需携带 `Authorization: Bearer <accessToken>`（`JwtAuthFilter` 只拦这两类路径，注册处在 `AuthFilterConfig`），`/auth/**`、`/health` 为白名单；业务 401 统一为 HTTP 200 + body `code=401`。JWT 配置在 `app.jwt.*`（主/测试两份 yml 都要同步），种子账号 demo / demo123456；冒烟脚本 `bash scenarios/01-auth/verify.sh`、`bash scenarios/03-flash-sale/verify.sh`（秒杀冒烟会耗尽种子库存，重复运行需重启后端；可用 `FLASH_BASE` 换端口）。
+- 秒杀（场景 03）：防超卖依赖 `flash_orders` 的 `uk(item_id, user_id)` 唯一索引与 `FlashItemMapper.deductStock` 原子条件更新，改动表结构或扣减语句前先看 `scenarios/03-flash-sale/design.md` 第三节；秒杀业务错误码为 61xx 分段（6101 未开始/6102 已结束/6103 已售罄/6104 重复抢购）；金额字段一律 BIGINT 存分。`POST /flash/demo/reset/{itemId}` 为演示专用重置接口（库存回满 + 物理清订单 + 清售罄标记，仅进行中商品），供前端并发演示控制台循环使用，生产环境不可保留。
 - 前端样式（场景 01 起）为 Tailwind CSS v4 utility-first：token 定义在 `src/style.css` 的 `@theme`，新代码不要写手写全局 CSS 类，也不要硬编码 hex。
 
 ## 相关文档 / 工具

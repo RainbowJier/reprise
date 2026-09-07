@@ -1,122 +1,123 @@
-# 场景 01 · 用户登录与认证（JWT）设计文档
+# 用户登录与认证（JWT）· 场景说明
 
-> reprise 场景复现系列 · 作者按：本文是场景 01 的成稿设计文档，面向想理解"一个生产级登录认证如何设计"的读者；过程性的任务拆解与执行记录见场景目录其他文件。
+> 经典前后端场景复现系列。本文只讲这个场景本身：它解决什么问题、如何设计、有哪些取舍与陷阱，不绑定任何具体工程实现。
 
-## 一、背景与目标
+## 一、场景概述
 
-几乎所有多用户系统的第一个问题都是"你是谁"。本场景在基座（Spring Boot 3.5 DDD 七层 + Vue 3）上实现完整的认证闭环：
+几乎所有多用户系统的第一个问题都是"你是谁"、以及"凭什么相信接下来的每个请求都是你"。
 
-**注册 → 登录 → 携带 token 访问受保护接口 → access 过期无感续期 → 登出**
+传统方案是服务端 Session + Cookie：登录后服务端存一份会话，浏览器带 Cookie 对号入座。它在单体架构下简单可靠，但一旦前端 App、小程序、多端与横向扩展出现，服务端有状态的缺点就被放大——于是**令牌化**成为主流：登录成功后服务端签发一个自带信息的签名令牌（token），之后每个请求携带令牌，服务端**无状态**地验签即可确认身份。
 
-核心链路：用户提交账号密码 → 后端校验并签发 access + refresh 双 token → 前端存 localStorage 并以 `Authorization: Bearer` 头携带 → 后端过滤器解析 token 注入用户上下文 → 受保护接口按上下文响应 → access 过期时前端用 refresh 静默换新。
+其中 **JWT（JSON Web Token）** 是事实标准。本场景的核心链路：
 
-**非目标**（本场景不做，留作延伸）：SSO 单点登录、RBAC 角色权限（场景 08）、验证码与防爆破限流、token 黑名单/服务端吊销、找回密码。
+**注册 → 登录（签发双 token）→ 携带 Bearer 令牌访问受保护接口 → 令牌过期无感续期 → 登出**
 
-## 二、总体设计
+## 二、总体架构
 
-![图2：认证组件在 DDD 分层中的落位与请求链路](auth-jwt/auth-architecture.svg)
+![图2：JWT 认证的通用分层架构与请求链路](auth-jwt/auth-architecture.svg)
 
-### 2.1 分层落位与依赖倒置
+无论技术栈如何，职责划分大致是五层：
 
-后端遵循基座 DDD 七层，其中 `application` 层按依赖规则不可见 `infrastructure`，本场景有两处端口反转：
+| 层 | 职责 |
+| --- | --- |
+| 前端应用 | 登录/注册表单；token 持久化存储；请求拦截器统一注入 `Authorization: Bearer <token>`；401 时自动续期重放 |
+| 接入层 | 鉴权过滤器统一拦截受保护路径（白名单路径直接放行）；认证接口与业务接口的路由 |
+| 应用层 | 认证用例编排：注册、登录、刷新；用户信息查询；密码编码 |
+| 领域层 | 用户模型（实体/仓储端口）与 token 能力端口——应用层只依赖端口接口 |
+| 基础设施层 | JWT 签发与验签实现、仓储实现（SQL 映射）、数据库 |
 
-| 端口接口 | 所在层 | 实现 | 解决的问题 |
-| --- | --- | --- | --- |
-| `TokenProvider` | demo-client | `JwtTokenProvider`（infrastructure，jjwt） | application 签发/解析 token 不触碰 jjwt 细节 |
-| `UserGateway` | demo-domain | `UserGatewayImpl`（infrastructure，委托 `UserMapper`） | application 访问用户数据不依赖 MyBatis |
+两条通用设计原则：
 
-`UserMapper` 因 `@MapperScan` 固定扫描 `infrastructure.mapper` 包而落位基础设施层——这也是引入 `UserGateway` 端口的直接原因。
+- **鉴权收敛在过滤器**：受保护路径统一在一个入口校验，业务接口保持纯净；白名单（登录、注册、健康检查）通过路径规则天然排除，而不是散落各处的判断；
+- **依赖倒置**：应用层不直接依赖具体技术（JWT 库、ORM），通过领域/契约层的端口接口访问，实现在基础设施层装配——替换技术组件不动业务逻辑。
 
-### 2.2 请求链路与白名单
-
-- `JwtAuthFilter` 以 `FilterRegistrationBean` 注册，**只拦截 `/user/*`**；`/auth/**`、`/health` 天然不经过过滤器（URL pattern 即白名单，无需维护排除列表）；
-- 过滤器不标 `@Component`，避免 Spring 对 Filter 的全路径自动注册造成白名单接口被误拦；
-- CORS 预检（OPTIONS）直接放行；过滤器异常不经过 `@RestControllerAdvice`，401 响应在过滤器内自写 JSON，与全局异常处理输出同构（HTTP 200 + body `code=401`）。
-
-## 三、认证流程设计
-
-### 3.1 双 token 生命周期
+## 三、双 token 设计
 
 ![图1：双 token 生命周期与 401 无感续期](auth-jwt/dual-token-flow.svg)
 
-| token | 用途 | 有效期 | 存放 |
+单 token 的两难：有效期长则失窃风险大，短则用户频繁被踢出登录。解法是职责分离的双 token：
+
+| token | 用途 | 典型有效期 | 存放 |
 | --- | --- | --- | --- |
-| access | 访问受保护接口 | 30 分钟 | localStorage + Bearer 头 |
-| refresh | 过期后换取新 token 对 | 7 天 | localStorage（仅发给 `/auth/refresh`） |
+| access | 访问受保护接口 | 分钟级（如 30 分钟） | 本地存储 + Bearer 请求头 |
+| refresh | 过期后换取新 token 对 | 天级（如 7 天） | 本地存储（只发给刷新接口） |
 
-刷新采用**旋转双发**：每次 refresh 同时签发新的 access + refresh，旧对自然过期。无状态 JWT 不查库校验（refresh 场景昵称取不到最新值，是已知取舍）。
+关键机制：
 
-### 3.2 前端无感续期
+1. **旋转双发**：每次刷新同时签发新的 access + refresh，旧对自然过期，减少长期固定凭据的暴露面；
+2. **前端无感续期**：响应拦截器捕获 401 → 挂起原请求 → **单飞**刷新（并发 401 共享同一次 refresh 请求，防止刷新风暴）→ 更新令牌 → 重放原请求；刷新失败（refresh 也过期）才真正跳转登录页，并携带 `redirect` 参数登录后回跳；
+3. **防递归**：刷新请求本身走独立通道（绕开会触发续期逻辑的拦截器），并以标记防止同一请求被重复重放。
 
-1. 响应拦截器捕获 `code=401` 且本地存在 refreshToken → 挂起原请求，发起**单飞**刷新（并发 401 共享同一次 refresh，防风暴）；
-2. 刷新走独立裸 axios 实例，绕开自身拦截器避免 401 递归；
-3. 成功 → 更新存储 → 重放原请求（`__retried` 标记防死循环）；失败（refresh 也过期）→ 清空登录态 → 跳 `/login?redirect=原路径`。
-
-### 3.3 token 结构与验签
+## 四、JWT 结构与验签
 
 ![图3：JWT 三段结构与 HS256 验签原理](auth-jwt/jwt-structure.svg)
 
-- claims：`sub`=userId、`username`、`type`=access/refresh、`iat`、`exp`、`jti`（UUID）；
-- `jti` 保证同一秒内重复签发也字节级不同（jjwt 时间戳只有秒级精度，无 jti 时同秒签发的 token 完全相同），同时是未来黑名单吊销的挂载点；
-- `type` claim 防止 access 与 refresh 混用（拿 access 当 refresh 请求 → 401）；
-- HS256 对称签名，secret ≥ 32 字节配置于 `app.jwt.*`（弱密钥启动即报错）。
+`header.payload.signature` 三段：头部声明签名算法，载荷携带身份声明，签名对前两段整体计算——**改任何一个字符，验签必失败**。
 
-## 四、数据模型
+载荷（claims）的设计要点：
 
-单表 `users`（`USER` 是 H2/PostgreSQL 双方言保留字，直接用必踩坑）：
+- `sub` 放用户唯一标识，`username` 等只读资料可选携带（**不要放敏感信息，载荷只是 Base64，不是加密**）；
+- `type` 区分 access / refresh，防止短效令牌被拿去刷新接口冒用；
+- `exp`/`iat` 控制有效期，验签时同时校验；
+- `jti` 唯一 ID：JWT 的时间戳只有秒级精度，同一秒内为同一用户重复签发会得到**字节级相同**的令牌——加 jti 才能保证唯一，它也是未来做黑名单吊销的挂载点。
 
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| id | BIGINT | 雪花算法（BaseIdEntity） |
-| username | VARCHAR(50) | 唯一索引，4-32 位字母数字下划线 |
-| password | VARCHAR(100) | BCrypt 哈希（强度 10，带盐慢哈希） |
-| nickname | VARCHAR(50) | 缺省同 username |
-| create_time / update_time / deleted | — | BaseEntity 自动填充 + 逻辑删除 |
+签名算法：单服务自签自验选 HS256（对称密钥，需 ≥ 32 字节且妥善保管）；多方验签（网关、微服务、SSO）选 RS256（私钥签、公钥验）。
 
-数据变更遵循基座约定（无迁移工具）：H2 由 `schema.sql`/`data.sql` 启动自动初始化（预置演示账号 demo / demo123456）；PostgreSQL 用 `sql/postgresql.sql` 手工执行。
+服务端每次请求的验签成本是一次 HMAC 运算（微秒级），这是"无状态"换来的红利。
 
-## 五、接口契约
+## 五、数据模型
 
-统一约定：路径含 context-path `/api`；响应包 `AjaxResult{code, msg, data}`；认证失败 HTTP 200 + `code=401`（跟随基座统一响应风格，前端按 code 分流）。
+用户表只需认证必需的字段：
 
-| 接口 | 认证 | 请求 | 成功返回 | 失败 |
-| --- | --- | --- | --- | --- |
-| POST /auth/register | 白名单 | username / password / nickname? | TokenResp（注册即登录） | 重名 409；参数非法 417 |
-| POST /auth/login | 白名单 | username / password | TokenResp | 统一 401「用户名或密码错误」（防用户名枚举） |
-| POST /auth/refresh | 白名单 | refreshToken | TokenResp（旋转双发） | 无效/过期/type 不符 401 |
-| GET /user/me | Bearer access | — | UserInfoResp | 缺失/过期/伪造 401 |
+| 字段 | 说明 |
+| --- | --- |
+| id | 全局唯一标识（自增或雪花） |
+| username | 登录名，唯一索引（并发重名由数据库约束兜底） |
+| password | **只存哈希，永不存明文**——BCrypt 这类带盐慢哈希（每次结果都不同、无法彩虹表逆推） |
+| nickname 等资料 | 展示用 |
 
-TokenResp：`accessToken`、`refreshToken`、`tokenType:"Bearer"`、`accessExpiresIn`、`userId`、`username`、`nickname`。
+## 六、接口契约
 
-## 六、关键取舍
+约定：响应统一为 `{code, msg, data}` 结构；认证失败不抛 HTTP 401 状态码，而是业务码 `code=401`——前后端统一按业务码分流。
 
-| 决策点 | 选择 | 理由 |
-| --- | --- | --- |
-| 认证框架 | jjwt + 自研 OncePerRequestFilter | 贴合 MyBatis-Plus 风格基座；不与现有 CORS/异常处理冲突；复现"手写认证"的学习价值高于"配置框架" |
-| 密码哈希 | spring-security-crypto 单引 BCrypt | 独立轻模块（无 Security 过滤链），带盐慢哈希 |
-| 签名算法 | HS256 | 单服务自签自验；RS256 留给 SSO 多方验签 |
-| 登出语义 | 前端清除存储，无后端接口 | 无状态 JWT 服务端不存会话；黑名单需引入存储，超出场景边界 |
-| token 存放 | localStorage + Bearer 头 | 避免 CSRF；XSS 风险依赖前端防护（不加 v-html 渲染不可信内容） |
-| 重名并发 | 先查后插 + 唯一索引兜底（DuplicateKeyException → 409） | 竞态窗口由数据库约束封死 |
+| 接口 | 认证 | 语义 | 失败 |
+| --- | --- | --- | --- |
+| POST /auth/register | 免鉴权 | 注册即登录，直接返回 token 对（省一次登录跳转） | 重名 409；参数非法 417 |
+| POST /auth/login | 免鉴权 | 校验成功签发双 token | 统一 401「用户名或密码错误」（**不区分哪个错**，防用户名枚举） |
+| POST /auth/refresh | 免鉴权 | refreshToken 换新 token 对（旋转双发） | 无效/过期/类型不符 401 |
+| GET /user/me | Bearer access | 当前用户信息——这是最小可用的受保护示例接口 | 缺失/过期/伪造 401 |
 
-## 七、安全边界与已知局限
+## 七、关键设计取舍
 
-- 登出仅客户端清除，签发过的 token 在过期前仍有效（无黑名单）；
+| 决策点 | 常见选择 | 取舍理由 |
+| --- | --- | ---|
+| 认证框架 | 轻量过滤器 + JWT 库 vs 完整安全框架（Spring Security 等） | 前者可控、贴合既有工程；后者生态全但概念重。理解过滤器原理后再用框架，顺序不能反 |
+| 密码哈希 | BCrypt（带盐慢哈希）| MD5/SHA 可被彩虹表与 GPU 暴力破解；慢哈希让单次猜测成本升到几十毫秒 |
+| 登出语义 | 仅前端清除存储 vs 服务端黑名单 | 无状态 JWT 天然无法"收回"；黑名单需要引入存储，等于放弃无状态——按业务安全等级决定 |
+| token 存放 | localStorage + 请求头 vs Cookie | 请求头天然免疫 CSRF；Cookie 免手动管理但需 SameSite 等防护，且跨域麻烦 |
+| 重名并发 | 先查后插 + 唯一索引兜底 | 应用层检查存在竞态窗口，数据库约束是最后防线 |
+| 401 传输形式 | HTTP 200 + 业务码 vs HTTP 401 状态码 | 两种流派都成立，关键是**前后端约定一致**、拦截器逻辑单一 |
+
+## 八、安全边界与已知局限
+
+- 无黑名单时，登出只是客户端删除——已签发且未过期的 token 仍然有效（这是无状态的代价）；
 - 旋转前的旧 refresh 在过期前仍可用一次；
-- HS256 单机 secret，多实例部署需共享密钥配置；
-- 无验证码/限流（错误码 429 已预留）；
-- 日志不落密码与 token 原文；登录失败不区分用户名/密码错误。
+- 对称密钥多实例部署需共享配置（密钥管理成为新问题）；
+- 未做验证码与登录限流时，接口可被脚本撞库（错误码可预留 429）；
+- 载荷不加密，敏感信息一律不入 token；
+- 日志不落密码与 token 原文；登录失败文案统一。
 
-## 八、验证结果
+## 九、验证策略
 
-| 层级 | 方式 | 结果 |
-| --- | --- | --- |
-| 后端 | `mvn test` 集成测试 10 用例（注册/重名/参数/登录/密码错/无 token/伪造/me/旋转刷新/type 混用） | 11/11 通过 |
-| 接口 | curl 冒烟脚本 `verify.sh` 7 步 | 全部通过 |
-| 浏览器 | 手动验收 8 项（守卫重定向、注册即登录、刷新保持、登出、demo 登录、错误提示、无感续期、全过期跳转） | 8/8 通过（续期项以临时 TTL 30s/90s 实测） |
+这类场景的用例设计清单（可直接作为测试计划）：
 
-## 九、延伸方向
+1. 注册成功返回双 token；重复注册 409；参数越界 417；
+2. 登录成功；密码错/用户名不存在统一 401 文案；
+3. 受保护接口：无 token 401、伪造签名 401、过期 401、有效 token 200 且返回本人数据；
+4. 刷新：有效 refresh 换到**不同**的新 access（jti 保证唯一）；拿 access 冒充 refresh 401；
+5. 端到端：登录 → 刷新页面登录态保持 → 登出后访问受保护页被拦 → 回跳登录；
+6. 续期观察：把 access 有效期临时调到秒级，过期后操作页面应无感成功；把 refresh 也调短，最终应跳转登录页。
 
-SSO/CAS（RS256 多方验签）· token 黑名单（Redis，按 jti）· RBAC（场景 08）· 登录限流与验证码 · 多端登录互踢。
+## 十、延伸方向
 
-> 踩坑过程与执行细节见 `NOTES.md`；完整任务拆解见 `tasks/`。
+SSO 单点登录（RS256 多方验签）· token 黑名单（Redis，按 jti）· RBAC 角色权限 · 验证码与登录限流 · 多端登录互踢 · 短信/扫码/OAuth 第三方登录。

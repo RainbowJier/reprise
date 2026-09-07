@@ -17,7 +17,6 @@ spring:
 
   sql:
     init:
-      # Windows 默认平台编码（GBK）读 UTF-8 脚本会乱码，显式指定
       encoding: UTF-8
 
 mybatis-plus:

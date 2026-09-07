@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" width="820" height="400"
+     font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">
+  <rect width="820" height="400" fill="#FFFFFF"/>
+  <rect x="0.5" y="0.5" width="819" height="399" fill="none" stroke="#D9DFE8"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/>
+    </marker>
+  </defs>
+
+  <!-- 面板 A：check-then-act -->
+  <rect x="40" y="40" width="360" height="300" rx="10" fill="#FFFFFF" stroke="#D9DFE8"/>
+  <text x="64" y="72" font-size="18" font-weight="700" fill="#3C5488">A</text>
+  <text x="86" y="71" font-size="14" font-weight="600" fill="#252A33">check-then-act 先查再改</text>
+
+  <text x="153" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T1</text>
+  <text x="295" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T2</text>
+
+  <g fill="#FFFFFF" stroke="#3C5488" stroke-width="1.5">
+    <rect x="88"  y="104" width="130" height="34" rx="6" fill-opacity="1"/>
+    <rect x="230" y="104" width="130" height="34" rx="6"/>
+    <rect x="88"  y="150" width="130" height="34" rx="6"/>
+    <rect x="230" y="150" width="130" height="34" rx="6"/>
+    <rect x="88"  y="196" width="130" height="34" rx="6"/>
+    <rect x="230" y="196" width="130" height="34" rx="6"/>
+  </g>
+  <g text-anchor="middle" font-size="12" fill="#252A33">
+    <text x="153" y="125">SELECT 得 1</text>
+    <text x="295" y="125">SELECT 得 1</text>
+    <text x="153" y="171">判断 1 &gt; 0 通过</text>
+    <text x="295" y="171">判断 1 &gt; 0 通过</text>
+    <text x="153" y="217">UPDATE 扣 1</text>
+    <text x="295" y="217">UPDATE 扣 1</text>
+  </g>
+
+  <g stroke="#5A6472" stroke-width="1.5">
+    <line x1="153" y1="230" x2="200" y2="254" marker-end="url(#arrow)"/>
+    <line x1="295" y1="230" x2="248" y2="254" marker-end="url(#arrow)"/>
+  </g>
+
+  <rect x="120" y="258" width="200" height="40" rx="6" fill="#E64B35" fill-opacity="0.10" stroke="#E64B35" stroke-width="1.5"/>
+  <text x="220" y="283" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">stock = -1 · 超卖</text>
+  <text x="220" y="322" text-anchor="middle" font-size="11" fill="#6B7280">判断与扣减之间的竞态窗口被并发踩中</text>
+
+  <!-- 面板 B：原子条件更新 -->
+  <rect x="420" y="40" width="360" height="300" rx="10" fill="#FFFFFF" stroke="#D9DFE8"/>
+  <text x="444" y="72" font-size="18" font-weight="700" fill="#3C5488">B</text>
+  <text x="466" y="71" font-size="14" font-weight="600" fill="#252A33">原子条件更新（一条语句）</text>
+
+  <text x="533" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T1</text>
+  <text x="675" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T2</text>
+
+  <g fill="#FFFFFF" stroke="#3C5488" stroke-width="1.5">
+    <rect x="468" y="102" width="130" height="44" rx="6"/>
+    <rect x="610" y="102" width="130" height="44" rx="6"/>
+    <rect x="468" y="156" width="130" height="34" rx="6"/>
+    <rect x="610" y="156" width="130" height="34" rx="6"/>
+  </g>
+  <g text-anchor="middle" fill="#252A33">
+    <text x="533" y="120" font-size="11">UPDATE stock-1</text>
+    <text x="533" y="136" font-size="11">WHERE stock &gt; 0</text>
+    <text x="675" y="120" font-size="11">UPDATE stock-1</text>
+    <text x="675" y="136" font-size="11">WHERE stock &gt; 0</text>
+    <text x="533" y="177" font-size="12">影响行数 = 1</text>
+    <text x="675" y="177" font-size="12">影响行数 = 0</text>
+  </g>
+
+  <rect x="468" y="200" width="130" height="34" rx="6" fill="#00A087" fill-opacity="0.10" stroke="#00A087" stroke-width="1.5"/>
+  <text x="533" y="221" text-anchor="middle" font-size="12" fill="#252A33">下单成功</text>
+  <rect x="610" y="200" width="130" height="34" rx="6" fill="#8491B4" fill-opacity="0.10" stroke="#8491B4" stroke-width="1.5"/>
+  <text x="675" y="221" text-anchor="middle" font-size="12" fill="#252A33">拒绝 · 已售罄</text>
+
+  <g stroke="#5A6472" stroke-width="1.5">
+    <line x1="533" y1="234" x2="580" y2="254" marker-end="url(#arrow)"/>
+    <line x1="675" y1="234" x2="628" y2="254" marker-end="url(#arrow)"/>
+  </g>
+
+  <rect x="500" y="258" width="200" height="40" rx="6" fill="#00A087" fill-opacity="0.10" stroke="#00A087" stroke-width="1.5"/>
+  <text x="600" y="283" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">stock = 0 · 恰好卖完</text>
+  <text x="600" y="322" text-anchor="middle" font-size="11" fill="#6B7280">单行更新被数据库串行执行，无竞态窗口</text>
+
+  <text x="410" y="376" text-anchor="middle" font-size="12" fill="#6B7280">图 2｜防超卖核心：先查再改存在竞态窗口，原子条件更新把判断与扣减合并为一步</text>
+</svg>

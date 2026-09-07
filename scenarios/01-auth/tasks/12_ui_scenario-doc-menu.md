@@ -208,3 +208,5 @@ const html = computed(() => {
 修订：1 - 用户反馈「左侧菜单高度固定」：AdminLayout 外层由 `min-h-screen` 改 `h-screen overflow-hidden`——侧栏固定为视口高（菜单区内部滚动），右侧内容区独立滚动，长文档页不再撑长侧栏。实测 aside 高度=视口高、main 可滚、windowScrollY=0。
 
 修订：2 - 用户反馈文档页不应展示过程性需求文档（auth-jwt.md），重新撰写独立的**场景设计文档** `scenarios/01-auth/design.md`（背景/总体设计/认证流程/数据模型/接口契约/关键取舍/安全边界/验证结果/延伸方向 九章，配同三张 SVG），scenarioDocs.js 数据源切换为 design.md；AGENTS 约定同步为"文档页展示 design.md"。实测渲染 9 章节 + 6 表格 + 3 SVG。auth-jwt.md 保留为工作流过程产物不展示。
+
+修订：3 - 用户反馈文档**不要有项目相关内容**：design.md 重写为纯场景说明（十章：场景概述/总体架构/双 token 设计/JWT 结构/数据模型/接口契约/关键取舍/安全边界/验证策略/延伸方向），去除仓库与基座表述（reprise、DDD 七层基座、demo-* 模块、类名、实测数据、演示账号、过程文件指引）；架构图重绘为通用五层（前端应用/接入层/应用层/领域层/基础设施层，token 端口·仓储端口·鉴权过滤器等通用元件），流程图响应标注去类名（AjaxResult→统一响应）。渲染实测：10 章节 + 5 表格 + 3 SVG，项目关键词（reprise/demo-/scenarios//NOTES/基座/Pinia/AjaxResult）全文检索零残留。
