@@ -10,18 +10,18 @@
 
 ## 场景索引
 
-| #   | 场景                       | 目录                                       | 状态  | 笔记 |
-| --- | -------------------------- | ------------------------------------------ | ----- | ---- |
-| 01  | 用户登录与认证（JWT/SSO）  | `scenarios/01-auth`                        | ✅ 已完成 | [NOTES.md](scenarios/01-auth/NOTES.md) |
-| 02  | 短链接服务                 | `scenarios/02-short-link`                  | ☐ 规划 | —    |
-| 03  | 秒杀 / 高并发抢购          | `scenarios/03-flash-sale`                  | ✅ 已完成 | [NOTES.md](scenarios/03-flash-sale/NOTES.md) |
-| 04  | Feed 流（推 / 拉 / 推拉结合） | `scenarios/04-feed`                     | ☐ 规划 | —    |
-| 05  | 即时通讯（WebSocket）      | `scenarios/05-im`                          | ☐ 规划 | —    |
-| 06  | 文件上传（分片 / 秒传）    | `scenarios/06-upload`                      | ☐ 规划 | —    |
-| 07  | 支付对接与回调对账         | `scenarios/07-payment`                     | ☐ 规划 | —    |
-| 08  | RBAC 权限系统              | `scenarios/08-rbac`                        | ☐ 规划 | —    |
-| 09  | 分布式锁与库存扣减         | `scenarios/09-distributed-lock`            | ☐ 规划 | —    |
-| 10  | 多级缓存与一致性           | `scenarios/10-caching`                     | ☐ 规划 | —    |
+| #   | 场景                       | 目录                                       | 状态  |
+| --- | -------------------------- | ------------------------------------------ | ----- |
+| 01  | 用户登录与认证（JWT/SSO）  | `scenarios/01-auth`                        | ✅ 已完成 |
+| 02  | 短链接服务                 | `scenarios/02-short-link`                  | ☐ 规划 |
+| 03  | 秒杀 / 高并发抢购          | `scenarios/03-flash-sale`                  | ✅ 已完成 |
+| 04  | Feed 流（推 / 拉 / 推拉结合） | `scenarios/04-feed`                     | ☐ 规划 |
+| 05  | 即时通讯（WebSocket）      | `scenarios/05-im`                          | ☐ 规划 |
+| 06  | 文件上传（分片 / 秒传）    | `scenarios/06-upload`                      | ☐ 规划 |
+| 07  | 支付对接与回调对账         | `scenarios/07-payment`                     | ☐ 规划 |
+| 08  | RBAC 权限系统              | `scenarios/08-rbac`                        | ☐ 规划 |
+| 09  | 分布式锁与库存扣减         | `scenarios/09-distributed-lock`            | ☐ 规划 |
+| 10  | 多级缓存与一致性           | `scenarios/10-caching`                     | ☐ 规划 |
 
 > 状态：☐ 规划 → 🧱 基座已就绪 → 🚧 进行中 → ✅ 已完成。场景代码统一在根目录 `backend/` + `frontend/` 基座上迭代；`scenarios/` 只存放各场景的说明与笔记，按需创建。
 
@@ -69,7 +69,7 @@ reprise/
 │       ├── router/         # 路由
 │       ├── stores/         # Pinia 状态
 │       └── views/          # 页面
-├── scenarios/              # 各场景文档与复现笔记，不重复创建前后端工程
+├── scenarios/              # 各场景设计文档、任务清单与复现踩坑记录，不重复创建前后端工程
 │   └── 01-auth/
 ├── docs/                 # 场景笔记模板
 └── README.md
@@ -105,7 +105,7 @@ npm install
 npm run dev
 ```
 
-打开 [http://localhost:5173](http://localhost:5173)，首页会自动执行后端健康检查。
+打开 [http://localhost:5173](http://localhost:5173)，使用演示账号 `demo / demo123456` 登录后进入场景集合。首页支持关键词搜索、状态筛选；每个已收录场景提供技术文档与交互演示，文档含章节目录、阅读进度及代码复制。健康检查位于「用户登录与认证」的交互演示页。
 
 ### 运行测试
 

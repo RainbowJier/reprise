@@ -1,38 +1,84 @@
-# 设计系统 · AI agent 参考规则
+# 设计系统 · 开发规则
 
-> 本文件用于指导 AI agent / 开发者，不是前端运行时配置。
-> 目标项目代码不得从 `frontend/design-system/` import 或 @import。
+> 本页是后续扩展约定，不等于每个存量页面均已实现所有建议。当前实现的具体限制见 [交互说明](./ui/interactions.md)。
 
-## R0 参考与代码边界
+## R0 · 参考与代码边界
 
-- `design-system/` 只存参考资料，不是组件包，不是 npm 依赖；
-- `design-system/ui/` 是参考实现或参考说明；目标项目使用时必须复制到项目自己的组件目录后再适配；
-- 不建立指向 `design-system/` 的路径别名、包依赖或运行时引入；
-- 目标项目已有规范、相邻代码和实际构建配置优先于本文件。
+- `frontend/design-system/` 仅用于开发参考，禁止运行时 import / @import、别名或包依赖。
+- 不在这里创建可执行 Vue 组件库、全局 CSS、主题配置或第二份业务源码。
+- 文档示例按需适配到 `src/`；已经存在的组件优先直接从源码引入，不复制同名实现。
+- 用户本次明确要求重新生成，因此可更新已有参考文件；后续普通功能探测仍应先只读，不自动覆盖此目录。
+- 以当前源码为事实，遇到旧说明冲突时明确记录，不能为了生成参考文档顺手改业务行为。
 
-## R1 组件复用
+## R1 · 组件复用
 
-- 项目样式体系为 Tailwind CSS v4 utility-first（用户决策），无 UI 组件库、无自有组件（当前 0 个）；
-- 样式复用即 utilities 复用：优先组合既有 token utilities（见 [tokens.md](./tokens.md)）；
-- 同一组 utilities 在 ≥2 处重复出现且承载业务语义时，沉淀为 `frontend/src/components/` 下的 Vue SFC 组件，而不是 `@apply` 全局类；
-- 引入 UI 组件库（Element Plus 等）需用户确认，不得擅自添加。
+- 开发前检查 [真实组件清单](./design-system.md)、`src/components/` 与相邻页面。
+- 图标用 AppIcon；登录/注册框架用 AuthShell；场景路由挂在 AdminLayout 下。
+- 当前只有 3 个公共组件，不虚构 Button、Tabs、Modal、Toast 等 API。
+- 同一语义组合反复出现且确有独立契约时，才考虑新建 `src/components/` SFC。
+- 不为风格统一引入未经授权的 UI 框架或依赖，不复制第三方组件源码。
 
-## R2 Token 与样式
+## R2 · 样式与主题
 
-- 颜色、字体、圆角只从 [tokens.md](./tokens.md) 登记的 `@theme` token 生成 utilities，禁止在 utilities 里硬编码 hex（`bg-[#3370ff]` 这类任意值仅限一次性对齐，不留存）；
-- 间距/字号/宽度用 Tailwind 默认刻度，语义色用自定义 token；
-- `src/style.css` 只保留 Tailwind 入口（`@import "tailwindcss"` + `@theme` 块）与必要的 base 层样式，不再新增手写 BEM 全局类；
-- 既有存量全局类随 Tailwind 接入任务一次性改写为 utilities，避免双体系并存。
+- 使用 Tailwind v4 utility-first，语义色来自 `src/style.css` 的 `@theme`。
+- 不在组件 utilities 中硬编码 hex；新颜色先判断是否能表达为现有语义色及透明度。
+- 字号、间距、圆角优先 Tailwind 默认刻度；已存在的特殊值以 [tokens.md](./tokens.md) 为参考，不批量扩大任意值用法。
+- 不新增手写 BEM/全局业务类，不用 `.card`、`.eyebrow` 等隐式类代替未定义的组件。
+- 现有 `pop-*` 是 Vue 账户菜单过渡例外，不应演变成第二套全局样式系统。
+- 卡片常用 rounded-xl＝12px；不要把尚未使用的 radius-card＝14px 宣称为全站实际圆角。
+- 字体使用现有回退栈，不假定 Inter 或宋体在每个设备可用；本项目没有网络字体加载。
+- 保持内容优先：常规区域用细边框、底色、间距分层，不默认增加大阴影和装饰渐变。
 
-## R3 文档同步
+## R3 · 路由与信息架构
 
-- 新增/修改组件时同步更新 `design-system.md` 组件清单；
-- `@theme` token 或映射变化时同步更新 `tokens.md`；
-- 规则变化时同步更新本文件；
-- 文档只能记录已从项目读取到的事实，未知内容明确标记为 `unknown` 或"未识别"。
+- 场景保持“技术文档 / 交互演示”成对入口，标题和简介由 AdminLayout 提供，子页面避免重复 h1。
+- 新场景同时登记元数据、路由与 Markdown/资源映射，不只把 enabled 改为 true。
+- 首页和文档当前也要求登录；样式任务不得默默改变权限边界。
+- 规划中场景保持清晰不可达状态，不给未实现路径伪造可点击按钮。
+- 导航使用 RouterLink 或语义链接；只有执行操作时使用 button。不要把导航链接称为具有完整 ARIA tabs 交互的组件。
+- 文档页面仍只使用各场景 `design.md`；开发设计和项目实测记录不混入纯技术讲义。
 
-## R4 验证边界
+## R4 · 交互与反馈
 
-- design-system 生成后确认目标前端源码没有新增指向本目录的 import；
-- 不因为生成参考资料而修改业务代码、构建配置或依赖（Tailwind 属于用户决策的工程变更，由开发任务执行）；
-- 后续功能开发仍使用目标项目自己的组件、样式和验证命令（`npm run build`；无 lint/test 配置；Tailwind v4 经 `@tailwindcss/vite` 参与构建校验）。
+- 发起请求时提供局部 loading、可理解的错误和重试；不要把失败显示成正常空数据。
+- 列表区分初始加载、空结果、错误和已加载数据。沿用页面分区状态，不用全页遮罩遮住无关内容。
+- 提交按钮请求中禁用并改变文案；是否锁定其他控件按实际共享状态决定，不假定一个 busy 标记覆盖整个页面。
+- 破坏性操作先明确对象与后果，再提供确认和取消。秒杀重置会清订单，不能改成无提示的一键执行。
+- 真实实验与静态演示必须在文案中区分；不为截图伪造成功数据。
+- 无结果提供清除筛选或可执行恢复入口，不能只显示无意义占位。
+- 可复用反馈目前是页面内模式，不是全局 Toast/Modal 服务。
+
+## R5 · 键盘、语义与可访问性
+
+- 交互控件使用原生 button/input/select/details/link，字段关联 label。
+- 图标默认装饰性；图标按钮由外层提供 aria-label。
+- 保留 focus-visible、reduced-motion、移动菜单可关闭与键盘访问能力。
+- 状态不只依赖颜色：同时提供文案，适合时使用 status/alert/live region。
+- 新表单建议将字段错误与 aria-invalid、aria-describedby 对应，不能据此宣称存量注册页已经实现。
+- 新增真正模态框时单独设计焦点进入、约束、恢复及背景 inert；现有内联重置确认不是 modal。
+- 不能因为已有焦点框或 Escape 处理就宣称全站 WCAG 合规。账户菜单、导航路由焦点及部分实验控件仍有边界。
+
+## R6 · 技术文档安全与扩展
+
+- renderDoc 只处理仓库受信 Markdown；没有 HTML sanitizer，不可直接用于用户投稿或外部可编辑内容。
+- 代码块转义与语言标签转义不等于整篇文档消毒；引入外部内容属于新需求。
+- 保留代码原文与复制结果反馈；Clipboard API 失败时要真实提示，不显示虚假成功。
+- 章节 id 为 `section-N` 顺序号，不是文本 slug；同一输入稳定，但在前面插入章节可能改变后续链接。
+- 代码和表格内部横向滚动，页面主体保持 min-w-0；不要用全页 overflow-hidden 隐藏溢出问题。
+- 无语法高亮、行号或代码折叠组件，文档不要声称存在这些能力。
+
+## R7 · 验证与同步
+
+修改运行时代码时采用已存在的命令：
+
+```bash
+npm --prefix frontend run build
+node --test frontend/src/utils/renderDoc.test.js
+```
+
+- 目前没有 npm lint/test/typecheck script，不虚构执行记录。
+- 样式改动需浏览器检查桌面与手机、长文档/表格、加载/空/错误状态；构建成功不能替代视觉验收。
+- 登录联调注意现有后端 CORS：5173/5174/3000 可用，默认 preview 端口 4173 不在白名单。不要仅为预览修改后端权限配置。
+- 文档更新检查内部链接、源文件路径、Token 值、接口默认值、未实现边界与模板残留。
+- 本目录更新不得改运行时源码；用 sources.json 与独立前后哈希检查源文件范围。
+- 同步组件清单、Token、UI 说明和 sources.json；时间戳不是内容已同步的证据。

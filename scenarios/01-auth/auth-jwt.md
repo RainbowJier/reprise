@@ -142,7 +142,7 @@ sequenceDiagram
 | 位置 | 变更 |
 | --- | --- |
 | `README.md` | 场景索引 01 状态 → 🚧 进行中（完成后 → ✅ 并链笔记） |
-| `scenarios/01-auth/NOTES.md` | 按 `docs/NOETS.md` 模板记录需求/取舍/实现要点/坑 |
+| `scenarios/01-auth/design.md` | 纯场景讲义（前端技术文档页渲染）；踩坑与实测记入本文档「十、踩坑与实测」 |
 | `AGENTS.md` | 更新「未接入认证」相关表述（GlobalExceptionHandler 注释、createBy 说明处一并核对） |
 | CORS 白名单 | 无需变更（前端仍走 5173 代理） |
 
@@ -195,14 +195,14 @@ sequenceDiagram
 6. 前端认证设施（store + http 拦截器/刷新队列 + API 模块 + 路由守卫）；
 7. 前端页面（登录/注册页 + HomeView 改造，基于 utilities）；
 8. 前后端联调验证（手动验收清单 + curl 脚本）；
-9. 文档收尾（NOTES.md、README 场景状态、AGENTS.md 表述更新）。
+9. 文档收尾（design.md 踩坑与实测、README 场景状态、AGENTS.md 表述更新）。
 
 依赖关系：1 → 2 → 3 → 4；5 独立即可开工；6 依赖契约冻结（2 完成前可先用 mock）；7 依赖 5+6；联调 8 依赖两侧（4 与 7）；9 收尾。
 
 ## 八、非功能性需求
 
 - **安全**：密码只存 BCrypt 哈希且不落日志；secret 不硬编码进代码（yml 配置 + dev 默认值 + 注释警示生产必须替换）；token 不进 Cookie；登录失败信息不区分用户名/密码错误。
-- **已知局限**（如实记录到 NOTES）：无状态 JWT 无法服务端吊销，登出仅前端清除；refresh 无黑名单，旋转前的旧 refresh 在过期前仍可用；HS256 单机 secret 无多实例密钥分发；无验证码/限流（`ResultCodeEnum` 已预留 429）。
+- **已知局限**（如实记录到「十、踩坑与实测」）：无状态 JWT 无法服务端吊销，登出仅前端清除；refresh 无黑名单，旋转前的旧 refresh 在过期前仍可用；HS256 单机 secret 无多实例密钥分发；无验证码/限流（`ResultCodeEnum` 已预留 429）。
 - **兼容性**：`/api/health` 行为不变；现有 `http.js` 解包行为不变；未登录访问受保护页由路由守卫拦截。
 - **性能**：登录 1 次 BCrypt 校验（~几十毫秒，可接受）；每请求 1 次 HMAC 验签（微秒级）+ me 查库 1 次。
 - **可观测**：过滤器 401 打 warn 日志（不含 token 原文）；注册/登录成功打 info（不含密码）。
@@ -213,3 +213,27 @@ sequenceDiagram
 - 前端验证：`cd frontend && npm run build`（无 lint/test 配置，如实以构建为校验 + 手动验收）；
 - 手动验收清单：注册即登录 → 刷新页面保持登录 → 登出后访问 `/` 被踢到登录页 → 重新登录 → `demo/demo123456` 亦可登录 → 手工把 accessExpiresIn 调短观察无感续期 → 篡改 token 后请求返回 401；
 - 实现顺序按「七、模块拆分建议」，每步跑最小验证再进下一步。
+
+## 十、踩坑与实测
+
+本仓库复现时的实际记录（环境：Windows + IDEA + H2）。
+
+**实测结果**：
+
+- 后端集成测试 11/11（`AuthFlowIntegrationTest` 10 用例 + contextLoads）；
+- curl 冒烟 `verify.sh` 7/7（注册/me/无 token 401/伪造 401/旋转刷新/demo 登录/文案统一）；
+- 浏览器手动验收 8/8（守卫重定向、注册即登录、F5 保持登录、登出、demo 登录、密码错误提示、无感续期、全过期跳登录——后两项以临时 TTL 30s/90s 实测，验后已恢复）；
+- 未做压测：瓶颈在登录 BCrypt 校验（约几十 ms/次，量级已知），过滤器验签为微秒级。
+
+**踩坑记录**：
+
+| 现象 | 原因 | 解决 |
+| ---- | ---- | ---- |
+| application 层注入 UserMapper 编译报「程序包不存在」 | 依赖方向 application 不可见 infrastructure，而 `@MapperScan` 只扫 infrastructure.mapper | domain 定义 `UserGateway` 端口、infrastructure 用 GatewayImpl 实现，application 只依赖接口 |
+| jjwt 依赖解析超时（连内网镜像失败） | 用户级与安装级 settings.xml 都配了同一个当前不可达的内网镜像 | 临时 settings 从 Maven Central 下载；注意 `_remote.repositories` 记录的仓库 ID 与镜像不匹配时本地构件也会重新解析 |
+| 集成测试 404「No static resource」 | TestRestTemplate 自动携带 context-path，测试路径再写 `/api` 双重前缀 | 测试路径只写 servlet 内路径（`/auth/login`），不带 `/api` |
+| 同一秒内登录两次，两次 access token 字节级相同 | jjwt 的 iat/exp 秒级精度，claims 全等 → HMAC 签名全等，JWT 是确定性输出 | 签发时加 jti（UUID）claim 保证唯一（也是黑名单吊销挂载点） |
+| 种子账号昵称前端乱码 | data.sql 是 UTF-8，Windows 下 `spring.sql.init` 默认按平台编码（GBK）读脚本 | `spring.sql.init.encoding: UTF-8`（主/测试 yml 都要加） |
+| curl 冒烟注册返回 417「请求体格式错误」 | `-d` 中文载荷被 Windows 控制台编码损坏成非法 JSON | 脚本载荷一律 ASCII；`set -e` 下 `test A && test B` 非末位失败不退出，改显式 if 守卫 |
+| 用健康检查按钮验证「无感续期」永远成功 | `/health` 在白名单，不带 token 也不经过过滤器，走不到 401 分支 | 验证载体换成受保护接口（页面刷新触发 `/user/me`） |
+| 路由切换加 `<Transition mode="out-in">` 偶发空白/卡旧页 | 过渡状态机与懒加载视图组合不可靠，被打断时离场不完成且无控制台报错 | 放弃组件级 Transition：视图根元素自带 `animate-fade-up` 入场动画（挂载即播，无可卡状态） |

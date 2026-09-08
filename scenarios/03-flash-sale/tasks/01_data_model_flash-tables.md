@@ -45,7 +45,7 @@ files:
 | 类别 | 事实 / 决策 |
 |------|-------------|
 | 数据变更策略 | 项目既有策略：schema.sql / data.sql 由 spring.sql.init 在 H2 启动时自动执行（幂等 CREATE TABLE IF NOT EXISTS）；PostgreSQL 不自动执行，手工脚本放场景目录 |
-| 防超卖核心 | `deductStock` 用 `@Update` 原生 SQL：`UPDATE flash_items SET stock = stock - 1 WHERE id = ? AND stock > 0 AND deleted = 0`——判断与扣减同语句原子完成，只认影响行数 |
+| 防超卖核心 | `deductStock` 由 `FlashItemMapper.xml` 承载原生 SQL：`UPDATE flash_items SET stock = stock - 1 WHERE id = ? AND stock > 0 AND deleted = 0`——判断与扣减同语句原子完成，只认影响行数 |
 | 种子时间 | 相对 `CURRENT_TIMESTAMP` 生成（-10min 进行中、+1day 未开始、-1day 已结束），保证任意时刻启动都有四档状态可演示 |
 | 方言边界 | data.sql 仅 H2 方言（`CURRENT_TIMESTAMP - INTERVAL '10' MINUTE`）；PostgreSQL 用 `now() - interval '10 minutes'` 写在独立脚本 |
 | 依赖 | 无前置依赖；后续任务 02/03 依赖本任务的实体与 Gateway |
@@ -55,7 +55,7 @@ files:
 1. schema.sql 追加两张表（含唯一索引）；
 2. data.sql 追加 4 行种子商品；
 3. domain 新建 flash 包：两个实体 + gateway 两个端口；
-4. infrastructure 新建两个 Mapper（FlashItemMapper 含 @Update deductStock）与两个 Gateway 实现；
+4. infrastructure 新建两个 Mapper 与同包名 XML（FlashItemMapper.xml 含 deductStock/resetStock），再实现两个 Gateway；
 5. 新建 scenarios/03-flash-sale/sql/postgresql.sql（核对场景 01 脚本后追加秒杀段）；
 6. `mvn test` 验证。
 
@@ -70,10 +70,11 @@ files:
 | `backend/demo/demo-domain/.../domain/flash/FlashOrder.java` | domain | 新增 | 秒杀订单实体 |
 | `backend/demo/demo-domain/.../domain/flash/gateway/FlashItemGateway.java` | domain | 新增 | 商品网关端口（含原子扣减） |
 | `backend/demo/demo-domain/.../domain/flash/gateway/FlashOrderGateway.java` | domain | 新增 | 订单网关端口 |
-| `backend/demo/demo-infrastructure/.../mapper/FlashItemMapper.java` | infrastructure | 新增 | 含 deductStock 原生 SQL |
+| `backend/demo/demo-infrastructure/.../mapper/FlashItemMapper.java` | infrastructure | 新增 | 仅声明 deductStock/resetStock 方法 |
 | `backend/demo/demo-infrastructure/.../mapper/FlashOrderMapper.java` | infrastructure | 新增 | 空扩展 Mapper |
 | `backend/demo/demo-infrastructure/.../gateway/FlashItemGatewayImpl.java` | infrastructure | 新增 | 商品网关实现 |
 | `backend/demo/demo-infrastructure/.../gateway/FlashOrderGatewayImpl.java` | infrastructure | 新增 | 订单网关实现 |
+| `backend/demo/demo-infrastructure/src/main/resources/mapper/FlashItemMapper.xml` | infrastructure | 新增 | deductStock/resetStock XML SQL |
 
 ## 完整代码（供手动敲写）
 
@@ -323,22 +324,19 @@ package com.fullstack.demo.infrastructure.mapper;
 
 import com.fullstack.common.mybatisplus.mapper.BaseMapperPlus;
 import com.fullstack.demo.domain.flash.FlashItem;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
 /**
  * 秒杀商品 Mapper
+ * <p>
+ * SQL 位于同包名 XML：resources/mapper/FlashItemMapper.xml。
  */
 public interface FlashItemMapper extends BaseMapperPlus<FlashItem> {
 
-    /**
-     * 防超卖核心：判断（stock > 0）与扣减（stock - 1）在同一条语句内原子完成。
-     * 数据库对单行更新串行执行，不存在「先查到 1 再决定扣」的竞态窗口；
-     * 应用层不依赖任何先前读到的库存值，只认影响行数。
-     */
-    @Update("UPDATE flash_items SET stock = stock - 1, update_time = CURRENT_TIMESTAMP "
-            + "WHERE id = #{itemId} AND stock > 0 AND deleted = 0")
-    int deductStock(@Param("itemId") Long itemId);
+    /** 防超卖核心：判断与扣减在 XML SQL 中同一条语句内原子完成。 */
+    int deductStock(Long itemId);
+
+    /** 演示专用：库存回满到初始值。 */
+    int resetStock(Long itemId);
 }
 ```
 

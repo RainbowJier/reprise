@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "purpose": "设计系统源码事实快照；路径相对仓库根目录，校验值只用于识别资料是否过期。",
+  "frontendRoot": "frontend",
+  "runtimeImportAllowed": false,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "908ad72920a3482333d7e8e1b494ffb5ba329a2da8ac9d6608649c8875b9c0f6"
+    },
+    {
+      "path": "frontend/package.json",
+      "sha256": "b4c17b3a2bae4792c4f287053d1ebbb71eaa70366ed78022fc25ad65624c3a72"
+    },
+    {
+      "path": "frontend/vite.config.js",
+      "sha256": "f1bf3eef73703425285bd842ee5587099ebe7fa243fded68e4982998a9fcd5b8"
+    },
+    {
+      "path": "frontend/index.html",
+      "sha256": "2d085dd284ab3928b4412bc4800cae5fb526cdca22a5f416e4a0af63d836b3f3"
+    },
+    {
+      "path": "frontend/src/style.css",
+      "sha256": "34707ddfbde8ca68f272c136b79851fe8339c9be765c080a4a12073bc6c642f9"
+    },
+    {
+      "path": "frontend/src/components/AppIcon.vue",
+      "sha256": "7e2b8795cbf1669c610eb41d50dee33a538e07603cad443baae8d7967a7aa08d"
+    },
+    {
+      "path": "frontend/src/components/AuthShell.vue",
+      "sha256": "1026ac3da9cc15079cdae19bb5b3dbece0985a7c0bbfbc4209c73284de75f11f"
+    },
+    {
+      "path": "frontend/src/layouts/AdminLayout.vue",
+      "sha256": "91c26330783bec4a915ef27b3d17e078c23350f6b001d7eada238f48cf45be8b"
+    },
+    {
+      "path": "frontend/src/views/HomeView.vue",
+      "sha256": "ddcdf2de7f13d8390ca84c08d408adc312d74871e7fbfa7cffac9004b5dde183"
+    },
+    {
+      "path": "frontend/src/views/LoginView.vue",
+      "sha256": "459eccfd9b70db3a08dc6949c23b6a0eaedef6588397a62d25d0ee069aa940e6"
+    },
+    {
+      "path": "frontend/src/views/RegisterView.vue",
+      "sha256": "58f5bdba81828cf0a4b1a5540500d94c64f81c4de033d598963cfde98b12708f"
+    },
+    {
+      "path": "frontend/src/views/scenario/AuthView.vue",
+      "sha256": "7b1fd0388bcf21fcb429abba94e81d24fb20c7131e68056f0f0919868d966277"
+    },
+    {
+      "path": "frontend/src/views/scenario/FlashSaleView.vue",
+      "sha256": "0bccb79993409fa7c8c0b65b07d3eaa891af92f2dcab38aea6d673e39a4a703c"
+    },
+    {
+      "path": "frontend/src/views/scenario/DocView.vue",
+      "sha256": "27b2d0d24b4d1b57e6ab514b18f0d4c0580e32bf3b049c05dd8495848f91a98d"
+    },
+    {
+      "path": "frontend/src/utils/renderDoc.js",
+      "sha256": "503c56006eb0eecb3bc87987e662dde9c7d7ad8f4e7bce0c0defe130d953a523"
+    },
+    {
+      "path": "frontend/src/utils/renderDoc.test.js",
+      "sha256": "7f527a393e34052e36b1223979c7fd0c457a6b484e8dc0f89f3cb554cc1966d4"
+    },
+    {
+      "path": "frontend/src/config/scenarios.js",
+      "sha256": "347414b4d7e1b4b243abde1854f0a2c9b9f8ef8b543ee4ca27e494e6371b018b"
+    },
+    {
+      "path": "frontend/src/config/scenarioDocs.js",
+      "sha256": "84aedf65a7a09c44b9180b8e0ea0e28f2b7fba451967ca454953eb279bf90e9c"
+    },
+    {
+      "path": "frontend/src/router/index.js",
+      "sha256": "e3edc3370c9482c80f6d9caec7efc63cd8ed015a938e6e18bd5c8b3af08d0522"
+    },
+    {
+      "path": "frontend/src/stores/auth.js",
+      "sha256": "4807359f1dc8c28a8bcf78623b037a8731f4a83bb37bf23ded22c3d3627657e5"
+    },
+    {
+      "path": "frontend/src/stores/counter.js",
+      "sha256": "eff56ed28f8b51b2927ac28619ed1b82cd484dfe30e3a6e07ceef0500c5c27cb"
+    },
+    {
+      "path": "frontend/src/api/authTokens.js",
+      "sha256": "3923dc4a1814c01506104ad9efc9c88e07c168487c07b39c60ed2b59016b5128"
+    },
+    {
+      "path": "frontend/src/api/http.js",
+      "sha256": "b8f4a385311dfd021b62a84ee8c80cd7902ddf79a8f5b2e03f77c7586f865178"
+    },
+    {
+      "path": "frontend/src/api/flashRace.js",
+      "sha256": "711747ee673d4c6d37be2fc22bf711d8160ded879578c68b555cdfc2a890d6d2"
+    },
+    {
+      "path": "frontend/src/api/flashSale.js",
+      "sha256": "a71d1e6201b319c6bf8d149d81d14b2d41562fb4002bf8a66db93b5d7c93616c"
+    },
+    {
+      "path": "frontend/node_modules/tailwindcss/theme.css",
+      "sha256": "443d7af364200f8ec8352dc78e39485a118a1840d498c97967bf0ae402b39167"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
 
 import { getAccessToken } from '@/api/authTokens'
 import { listFlashItems, listMyFlashOrders, resetFlashDemoItem, seckillFlashItem } from '@/api/flashSale'
@@ -7,6 +8,10 @@ import { raceSeckill, registerRaceUser } from '@/api/flashRace'
 
 const items = ref([])
 const orders = ref([])
+const ordersError = ref('')
+const ordersLoading = ref(false)
+const resetConfirm = ref(false)
+const resetting = ref(false)
 const listError = ref('')
 const loading = ref(false)
 const busyItemId = ref(null)
@@ -54,21 +59,25 @@ const buttonState = (item) => {
 
 async function loadItems(silent = false) {
   if (!silent) loading.value = true
-  if (!silent) listError.value = ''
   try {
     items.value = await listFlashItems()
+    listError.value = ''
   } catch (error) {
-    if (!silent) listError.value = error instanceof Error ? error.message : String(error)
+    listError.value = error instanceof Error ? error.message : String(error)
   } finally {
     loading.value = false
   }
 }
 
 async function loadOrders() {
+  ordersLoading.value = true
+  ordersError.value = ''
   try {
     orders.value = await listMyFlashOrders()
-  } catch {
-    orders.value = []
+  } catch (error) {
+    ordersError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    ordersLoading.value = false
   }
 }
 
@@ -132,7 +141,7 @@ const raceServerStock = ref(null)
 const raceBusy = computed(() => racePhase.value === 'registering' || racePhase.value === 'firing')
 const racableItems = computed(() => items.value.filter((i) => i.status === 'IN_PROGRESS'))
 const raceTarget = computed(() => items.value.find((i) => i.id === raceItemId.value))
-const canStartRace = computed(() => !raceBusy.value && !!raceTarget.value && raceTarget.value.stock > 0)
+const canStartRace = computed(() => !raceBusy.value && !resetting.value && !!raceTarget.value && raceTarget.value.stock > 0)
 
 // 不变式对账：初始库存 − 成功数 应等于服务端剩余（null = 尚未取到服务端数据）
 const invariantOk = computed(() => {
@@ -244,31 +253,31 @@ async function startRace() {
 }
 
 async function resetRaceItem() {
-  if (!raceItemId.value || raceBusy.value) return
+  if (!raceItemId.value || raceBusy.value || resetting.value) return
   raceError.value = ''
+  resetting.value = true
   try {
     await resetFlashDemoItem(raceItemId.value)
     raceServerStock.value = null
     raceStats.value = null
     raceLogs.value = []
     result.value = { type: 'success', text: '演示库存已重置（库存回满、订单清空、售罄标记清除）' }
-    await loadItems(true)
+    await Promise.all([loadItems(true), loadOrders()])
+    resetConfirm.value = false
   } catch (error) {
     raceError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    resetting.value = false
   }
 }
 </script>
 
 <template>
-  <section class="mb-4 animate-fade-up rounded-card border border-line bg-white px-6 py-5">
-    <h2 class="mb-2 text-[15px] font-semibold">场景 03 · 秒杀 / 高并发抢购</h2>
-    <p class="text-sm leading-6 text-ink-secondary">
-      防超卖三层防线：内存售罄标记（拦洪峰）→ 数据库原子扣减（保正确）→ 唯一索引限购（幂等兜底）。
-      页面内建并发演示控制台，可实时观察整个抢购过程；金额单位为分；设计见 scenarios/03-flash-sale/design.md。
-    </p>
-  </section>
+  <div class="mb-6 grid animate-fade-up gap-3 sm:grid-cols-3">
+    <div v-for="(guard, index) in [['拦截洪峰', '内存售罄标记'], ['守住库存', '数据库原子扣减'], ['保证限购', '唯一索引兜底']]" :key="guard[0]" class="flex items-center gap-3 rounded-xl border border-line bg-paper px-4 py-4"><span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft font-mono text-xs text-primary">0{{ index + 1 }}</span><div><p class="text-xs font-semibold">{{ guard[0] }}</p><p class="mt-1 text-[10px] text-ink-secondary">{{ guard[1] }}</p></div></div>
+  </div>
 
-  <section class="mb-4 rounded-card border border-line bg-white px-6 py-5">
+  <section class="mb-6 rounded-xl border border-line bg-paper p-5 sm:p-6">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
       <h2 class="text-[15px] font-semibold">秒杀商品</h2>
       <div class="flex items-center gap-3">
@@ -277,7 +286,7 @@ async function resetRaceItem() {
           自动刷新库存
         </label>
         <button
-          class="rounded-md bg-primary px-4 py-2 text-sm text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+          class="rounded-md bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           :disabled="loading"
           @click="loadItems()"
         >
@@ -286,20 +295,21 @@ async function resetRaceItem() {
       </div>
     </div>
 
-    <p v-if="listError" class="mb-3 text-sm text-danger">{{ listError }}</p>
+    <p v-if="listError" role="alert" class="mb-3 text-sm text-danger">{{ listError }}</p>
 
     <div
       v-if="result"
-      class="mb-3 rounded-md px-3 py-2 text-sm"
+      role="status" class="mb-3 rounded-md px-3 py-2 text-sm"
       :class="result.type === 'success' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'"
     >
       {{ result.text }}
     </div>
 
-    <p v-if="!items.length && !listError" class="text-sm text-ink-secondary">暂无秒杀商品</p>
+    <div v-if="loading && !items.length" role="status" class="grid gap-4 sm:grid-cols-2"><div v-for="n in 2" :key="n" class="h-44 animate-pulse rounded-xl bg-code-bg" /><span class="sr-only">正在加载秒杀商品</span></div>
+    <p v-else-if="!items.length && !listError" class="rounded-lg border border-dashed border-line py-10 text-center text-sm text-ink-secondary">暂无秒杀商品</p>
 
-    <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <article v-for="item in items" :key="item.id" class="rounded-card border border-line p-4">
+    <div v-else-if="items.length" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <article v-for="item in items" :key="item.id" class="rounded-xl border border-line bg-canvas/40 p-5">
         <div class="mb-2 flex items-start justify-between gap-2">
           <div>
             <h3 class="text-[15px] font-semibold">{{ item.name }}</h3>
@@ -333,7 +343,7 @@ async function resetRaceItem() {
         </div>
 
         <button
-          class="w-full rounded-md py-2 text-sm text-white transition-all disabled:cursor-not-allowed disabled:opacity-60"
+          class="w-full rounded-md py-2 text-xs font-medium text-white transition-all disabled:cursor-not-allowed disabled:opacity-60"
           :class="buttonState(item).cls ?? 'bg-primary'"
           :disabled="buttonState(item).disabled"
           @click="handleSeckill(item)"
@@ -344,8 +354,9 @@ async function resetRaceItem() {
     </div>
   </section>
 
-  <section class="mb-4 rounded-card border border-line bg-white px-6 py-5">
-    <h2 class="mb-1 text-[15px] font-semibold">并发抢购演示</h2>
+  <section class="mb-6 rounded-xl border border-line bg-paper p-5 sm:p-6">
+    <p class="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-widest text-primary"><AppIcon name="code" />CONCURRENCY LAB</p>
+    <h2 class="mb-1 text-[15px] font-semibold">并发抢购实验室</h2>
     <p class="mb-4 text-sm text-ink-secondary">
       浏览器端真实发起洪峰：批量注册虚拟用户同时开抢，实时展示库存扣减、售罄拒绝与限购兜底，结束后与服务端对账。
     </p>
@@ -358,7 +369,7 @@ async function resetRaceItem() {
           type="button"
           class="rounded px-3 py-1.5 text-sm disabled:cursor-not-allowed"
           :class="raceMode === m.key ? 'bg-primary text-white' : 'text-ink-secondary hover:text-ink'"
-          :disabled="raceBusy"
+          :disabled="raceBusy || resetting"
           @click="raceMode = m.key"
         >
           {{ m.label }}
@@ -372,16 +383,16 @@ async function resetRaceItem() {
           type="number"
           min="4"
           max="50"
-          :disabled="raceBusy"
+          :disabled="raceBusy || resetting"
           class="w-16 rounded-md border border-line px-2 py-1 text-sm text-ink"
         />
       </label>
 
-      <label class="flex items-center gap-1.5 text-sm text-ink-secondary">
+      <label class="flex max-w-full flex-wrap items-center gap-1.5 text-sm text-ink-secondary">
         目标商品
         <select
           v-model.number="raceItemId"
-          :disabled="raceBusy"
+          :disabled="raceBusy || resetting"
           class="rounded-md border border-line bg-white px-2 py-1 text-sm text-ink"
         >
           <option v-for="i in racableItems" :key="i.id" :value="i.id">
@@ -391,7 +402,7 @@ async function resetRaceItem() {
       </label>
 
       <button
-        class="rounded-md bg-primary px-4 py-2 text-sm text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+        class="rounded-md bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
         :disabled="!canStartRace"
         @click="startRace"
       >
@@ -399,15 +410,19 @@ async function resetRaceItem() {
       </button>
       <button
         class="rounded-md border border-line px-4 py-2 text-sm text-ink-secondary hover:bg-code-bg disabled:cursor-not-allowed disabled:opacity-60"
-        :disabled="!raceItemId || raceBusy"
-        @click="resetRaceItem"
+        :disabled="!raceItemId || raceBusy || resetting"
+        @click="resetConfirm = !resetConfirm"
       >
         重置演示库存
       </button>
       <span v-if="raceProgress" class="animate-pulse text-sm text-primary">{{ raceProgress }}</span>
     </div>
 
-    <p v-if="raceError" class="mb-3 text-sm text-danger">{{ raceError }}</p>
+    <div v-if="resetConfirm" class="mb-4 rounded-lg border border-danger/20 bg-danger/5 p-4" role="alert">
+      <p class="text-xs leading-6 text-danger">重置「{{ raceTarget?.name }}」会恢复全部库存，并永久清空该商品的所有演示订单。仅限本地演示使用。</p>
+      <div class="mt-3 flex gap-3"><button class="rounded-lg bg-danger px-3 py-2 text-xs text-white disabled:opacity-60" :disabled="resetting || raceBusy" @click="resetRaceItem">{{ resetting ? '重置中…' : '确认清空并重置' }}</button><button class="rounded-lg border border-line px-3 py-2 text-xs" :disabled="resetting" @click="resetConfirm = false">取消</button></div>
+    </div>
+    <p v-if="raceError" role="alert" class="mb-3 text-sm text-danger">{{ raceError }}</p>
     <p v-else-if="racePhase === 'idle' && !raceStats" class="mb-3 text-xs text-ink-secondary">
       提示：耳机库存仅 5 件，最适合观察售罄过程；演示跑完后点「重置演示库存」即可反复玩。
       商品卡片会随 2s 自动刷新同步跳动。
@@ -453,9 +468,11 @@ async function resetRaceItem() {
     </div>
   </section>
 
-  <section class="rounded-card border border-line bg-white px-6 py-5">
+  <section class="rounded-xl border border-line bg-paper p-5 sm:p-6">
     <h2 class="mb-3 text-[15px] font-semibold">我的抢购订单</h2>
-    <p v-if="!orders.length" class="text-sm text-ink-secondary">还没有抢购成功的订单</p>
+    <p v-if="ordersLoading && !orders.length" role="status" class="py-6 text-center text-sm text-ink-secondary">正在加载订单…</p>
+    <div v-else-if="ordersError" role="alert" class="flex flex-wrap items-center gap-3 rounded-lg bg-danger/5 p-3 text-xs text-danger">{{ ordersError }}<button class="underline underline-offset-4" @click="loadOrders">重新加载订单</button></div>
+    <div v-else-if="!orders.length" class="rounded-lg border border-dashed border-line py-8 text-center"><AppIcon name="book" class="mx-auto mb-3 h-6 w-6 text-ink-secondary/50" /><p class="text-sm text-ink-secondary">还没有抢购成功的订单</p><p class="mt-2 text-xs text-ink-secondary">参与上方抢购，成功的订单会展示在这里。</p></div>
     <ul v-else class="space-y-2">
       <li
         v-for="order in orders"

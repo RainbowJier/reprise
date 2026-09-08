@@ -59,16 +59,20 @@ files:
     void resetStock(Long itemId);
 ```
 
-### FlashItemMapper 追加
+### FlashItemMapper.xml 追加 SQL
 
-```java
-    /**
-     * 演示专用：库存回满到初始值（生产环境没有「把库存加回去」这种运维入口，
-     * 对应的是补货/回滚等专门流程）。
-     */
-    @Update("UPDATE flash_items SET stock = total_stock, update_time = CURRENT_TIMESTAMP "
-            + "WHERE id = #{itemId} AND deleted = 0")
-    int resetStock(@Param("itemId") Long itemId);
+`FlashItemMapper.java` 只声明 `resetStock(Long itemId)`，SQL 放在
+`backend/demo/demo-infrastructure/src/main/resources/mapper/FlashItemMapper.xml`：
+
+```xml
+    <!-- 演示专用：库存回满到初始值。 -->
+    <update id="resetStock">
+        UPDATE flash_items
+        SET stock = total_stock,
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{itemId}
+          AND deleted = 0
+    </update>
 ```
 
 ### FlashOrderGateway（domain）追加

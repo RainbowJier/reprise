@@ -1,15 +1,30 @@
-# UI 参考实现区
+# UI 参考说明
 
-本目录只存目标项目 UI 组件的参考快照或参考说明，供 AI agent 阅读。
+本目录保存**当前 UI 的布局说明、utilities 配方和交互边界**，不是运行时组件包，也不复制业务 SFC。
 
-## 约束
+## 索引
 
-- 目标项目代码不得从 `frontend/design-system/ui/` import；
-- 需要使用组件时，把参考实现复制到目标项目自己的组件目录（`frontend/src/components/`）后再适配；
-- 复制前先确认目标项目技术栈、命名、样式和无障碍约定；
-- 外部组件库只记录项目使用方式，不复制第三方依赖源码；
-- 没有可确认的组件时保持本说明，不批量创建或虚构组件。
+| 文档 | 回答的问题 | 主要来源 |
+| --- | --- | --- |
+| [layouts.md](./layouts.md) | 页面如何排列，何时切换列数和导航方式 | AdminLayout、HomeView、AuthShell、DocView |
+| [patterns.md](./patterns.md) | 按钮、卡片、表单、徽标、代码区如何组合 | 当前组件和页面模板 |
+| [interactions.md](./interactions.md) | 如何响应搜索、请求、导航、复制和实验操作 | 当前脚本、路由与 store |
 
-## 参考快照清单
+公共组件接口见 [design-system.md](../design-system.md)，设计变量见 [tokens.md](../tokens.md)。
 
-（空）——目标项目当前无可参考的自有组件或外部库封装；样式能力以全局样式类（`frontend/src/style.css`）形式存在，直接复用即可，无需快照。
+## 如何使用
+
+1. 优先引用已有 `AppIcon`、`AuthShell`，场景页面通过路由复用 `AdminLayout`。
+2. 没有现成组件的视觉模式按配方组合 utilities，事件与状态使用目标页面真实逻辑。
+3. 示例是参考片段，不是新增的 Button/Card/Toast API；不能从文档 import。
+4. 不为参考区创建占位组件或拷贝第三方依赖源码。
+5. 涉及接口、业务或可访问性时继续读来源文件，不把静态示例当完整实现。
+
+## 当前不提供
+
+- 可运行的 Storybook 或 HTML 组件展台。
+- Vue 源码镜像、主题 npm 包、全局 BEM 样式。
+- 未经测量的 WCAG 合规声明。
+- 暗色主题、语法高亮或通用对话框等尚未实现的能力。
+
+本次是文档重生成；因此没有额外制作 UI 或新增运行时依赖。

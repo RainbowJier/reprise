@@ -13,7 +13,7 @@ const filters = [
 ]
 const visible = computed(() => scenarios.filter(s => {
   const matchesFilter = filter.value === 'all' || (filter.value === 'ready' ? s.enabled : !s.enabled)
-  return matchesFilter && `${s.no} ${s.name} ${s.desc} ${s.tags.join(' ')}`.toLowerCase().includes(query.value.trim().toLowerCase())
+  return matchesFilter && `${s.no} ${s.name} ${s.desc} ${(s.tags || []).join(' ')}`.toLowerCase().includes(query.value.trim().toLowerCase())
 }).sort((a, b) => Number(b.enabled) - Number(a.enabled)))
 const clearFilters = () => { query.value = ''; filter.value = 'all' }
 </script>
@@ -23,7 +23,7 @@ const clearFilters = () => { query.value = ''; filter.value = 'all' }
     <div class="grid items-center gap-8 border-b border-line pb-10 pt-3 xl:grid-cols-[1fr_240px]">
       <div>
         <p class="mb-5 flex items-center gap-2 text-[10px] font-medium tracking-[0.2em] text-primary"><span class="h-1.5 w-1.5 rounded-full bg-primary" />THE ENGINEERING FIELD NOTES</p>
-        <h1 class="text-4xl font-semibold leading-[1.35] tracking-tight sm:text-5xl">经典场景，<br><span class="font-display font-normal text-primary">重新理解，亲手复现。</span></h1>
+        <h1 class="text-3xl font-semibold leading-[1.4] tracking-tight sm:text-5xl">经典场景，<br><span class="font-display font-normal text-primary">重新理解，亲手复现。</span></h1>
         <p class="mt-5 max-w-xl text-sm leading-7 text-ink-secondary">不止于读懂原理。把登录认证、高并发交易等经典问题，<br class="hidden sm:block">写成可阅读的技术文档，也做成可以操作的真实演示。</p>
         <div class="mt-7 flex flex-wrap items-center gap-5">
           <RouterLink to="/scenario/01-auth/doc" class="inline-flex items-center gap-3 rounded-lg bg-primary px-4 py-2.5 text-xs font-medium text-white hover:bg-primary-hover">从第一个场景开始<AppIcon name="arrow" /></RouterLink>

@@ -1,72 +1,38 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
-/*
- * 场景 01 起，样式体系为 Tailwind v4 utility-first。
- * @theme 值由原 :root CSS 变量整体迁移（色板不变），映射表见 frontend/design-system/tokens.md。
- */
 @theme {
-  --color-canvas: #f6f7f9;
-  --color-ink: #1f2329;
-  --color-ink-secondary: #646a73;
-  --color-line: #e5e6eb;
-  --color-primary: #3370ff;
-  --color-primary-hover: #2b5fd9;
-  --color-success: #34c724;
-  --color-danger: #f54a45;
-  --color-code-bg: #f0f1f3;
-  /* RuoYi 风格管理端侧栏（场景 01 后基座布局） */
-  --color-sidebar: #304156;
-  --color-sidebar-hover: #263445;
-  --color-sidebar-active: #1f2d3d;
-  --color-sidebar-text: #bfcbd9;
-  --radius-card: 10px;
+  --color-canvas: #f7f8f5;
+  --color-paper: #ffffff;
+  --color-ink: #202923;
+  --color-ink-secondary: #67736b;
+  --color-line: #e2e7df;
+  --color-primary: #28634b;
+  --color-primary-hover: #1d4e39;
+  --color-primary-soft: #eaf1e9;
+  --color-success: #287a55;
+  --color-danger: #bc4545;
+  --color-code-bg: #f0f3ed;
+  --color-code-panel: #1e2d25;
+  --color-code-text: #dfebe2;
+  --color-amber: #976723;
+  --radius-card: 14px;
   --font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-
-  /* 动效 token（场景 01 交互优化） */
+  --font-display: 'Georgia', 'Songti SC', 'SimSun', serif;
   --animate-shake: shake 0.4s ease-in-out;
   --animate-fade-up: fade-up 0.35s ease-out both;
-
-  @keyframes shake {
-    10%, 90% { transform: translateX(-1px); }
-    20%, 80% { transform: translateX(2px); }
-    30%, 50%, 70% { transform: translateX(-3px); }
-    40%, 60% { transform: translateX(3px); }
-  }
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: none; }
-  }
+  @keyframes shake { 10%,90% { transform:translateX(-1px) } 20%,80% { transform:translateX(2px) } 30%,50%,70% { transform:translateX(-3px) } 40%,60% { transform:translateX(3px) } }
+  @keyframes fade-up { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
 }
 
 @layer base {
-  body {
-    @apply bg-canvas font-sans text-ink antialiased;
-  }
-
-  /* 全局按钮微交互：颜色/变形过渡 + 按压缩放 */
-  button {
-    @apply transition-all duration-150 active:scale-[0.97];
-  }
-
-  /* 无障碍：系统开启"减弱动态效果"时降级 */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    ::before,
-    ::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+  body { @apply bg-canvas font-sans text-ink antialiased; }
+  button { @apply cursor-pointer transition-all duration-150 active:scale-[0.98]; }
+  button:disabled { @apply cursor-not-allowed; }
+  :focus-visible { @apply outline-2 outline-offset-4 outline-primary; }
+  ::selection { @apply bg-primary/20 text-ink; }
+  @media (prefers-reduced-motion: reduce) { *,::before,::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
 }
 
-/* 弹层过渡（用户下拉等，配 <Transition name="pop">；同步组件无懒加载，状态机可靠） */
-.pop-enter-active,
-.pop-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-.pop-enter-from,
-.pop-leave-to {
-  opacity: 0;
-  transform: scale(0.95) translateY(-4px);
-}
+.pop-enter-active,.pop-leave-active { transition: opacity .15s ease, transform .15s ease; }
+.pop-enter-from,.pop-leave-to { opacity:0; transform:translateY(-4px) scale(.98); }
