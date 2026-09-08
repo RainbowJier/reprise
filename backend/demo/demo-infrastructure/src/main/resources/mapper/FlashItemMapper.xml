@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fullstack.demo.infrastructure.mapper.FlashItemMapper">
+
+    <!--
+        防超卖核心：判断 stock > 0 与扣减 stock - 1 在同一条 SQL 内原子完成。
+        应用层只认影响行数，不依赖先前查询到的库存值。
+    -->
+    <update id="deductStock">
+        UPDATE flash_items
+        SET stock = stock - 1,
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{itemId}
+          AND stock &gt; 0
+          AND deleted = 0
+    </update>
+
+    <!-- 演示专用：将库存恢复到初始库存，供前端并发演示循环使用。 -->
+    <update id="resetStock">
+        UPDATE flash_items
+        SET stock = total_stock,
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{itemId}
+          AND deleted = 0
+    </update>
+
+</mapper>
