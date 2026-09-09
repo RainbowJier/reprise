@@ -1,4 +1,4 @@
-package com.fullstack.demo.application.flash;
+package com.fullstack.demo.application.serviceplmpl.flash;
 
 import org.springframework.stereotype.Component;
 

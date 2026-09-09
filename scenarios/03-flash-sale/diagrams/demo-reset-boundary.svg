@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 584" width="820" height="584" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 7｜演示重置：数据库原子性，不等于全局安全重开</title>
+<desc id="figure-desc">停流且无在途交易时才使用演示重置。数据库事务恢复库存并物理删除商品全部用户订单，本实例内存标记单独清理。存在跨实例旧标记、旧请求回写true和刚成功订单被删除等并发边界，不是生产回补方案。</desc>
+<rect width="820" height="584" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="583" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="756" height="58" rx="6" fill="#E64B35" fill-opacity="0.1" stroke="#E64B35" stroke-width="1.5"/>
+<text x="410" y="67" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410" dy="0">前提：隔离演示环境，已停流且没有其他在途交易。</tspan></text>
+<rect x="32" y="122" width="494" height="172" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="155" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="155" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">同一个数据库事务</tspan></text>
+<rect x="52" y="179" width="214" height="70" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="159.0" y="206" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="159.0" dy="0">stock = total_stock</tspan></text>
+<text x="159.0" y="228" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="159.0" dy="0">恢复该商品库存</tspan></text>
+<rect x="290" y="179" width="214" height="70" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="397.0" y="206" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="397.0" dy="0">物理删除该商品订单</tspan></text>
+<text x="397.0" y="228" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="397.0" dy="0">范围是所有用户</tspan></text>
+<line x1="272" y1="214" x2="284" y2="214" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="548" y="122" width="240" height="172" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="572" y="153" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="572" dy="0">B</tspan></text>
+<text x="600" y="153" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="600" dy="0">本实例内存</tspan></text>
+<rect x="567" y="179" width="202" height="70" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="668.0" y="206" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="668.0" dy="0">清除售罄标记</tspan></text>
+<text x="668.0" y="228" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="668.0" dy="0">不随数据库自动回滚</tspan></text>
+<line x1="532" y1="214" x2="559" y2="214" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="410" y="329" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33"><tspan x="410" dy="0">只清本实例标记，其他实例可能仍拒绝已回满库存的商品。</tspan></text>
+<rect x="32" y="356" width="756" height="144" rx="6" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="387" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">刚成功的订单</tspan></text>
+<text x="302" y="387" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="302" dy="0">可能被后续 reset 删除</tspan></text>
+<text x="56" y="428" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">在途失败请求</tspan></text>
+<text x="302" y="428" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="302" dy="0">可能在清理之后又写回 true</tspan></text>
+<text x="56" y="469" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">生产取消 / 回补</tspan></text>
+<text x="302" y="469" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="302" dy="0">需要状态机、幂等、失效协调与审计</tspan></text>
+<text x="410" y="539" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">按钮禁用只约束当前页面，不是跨用户、跨标签页的互斥锁。</tspan></text>
+<text x="410" y="562" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 7｜演示重置：数据库原子性，不等于全局安全重开</tspan></text>
+</svg>

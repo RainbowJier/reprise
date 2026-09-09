@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 582" width="820" height="582" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 6｜并发演示的两种模式，以及观测结果的证据边界</title>
+<desc id="figure-desc">多用户实验检验库存竞争，单用户实验检验限购。客户端成功次数、RT和页面库存只是观察，数据库提交订单和一致库存查询才是核对依据；请求超时和外部交易会影响页面等式。</desc>
+<rect width="820" height="582" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="581" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="370" height="206" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">多用户洪峰</tspan></text>
+<rect x="418" y="32" width="370" height="206" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">单用户连点</tspan></text>
+<rect x="60" y="95" width="314" height="66" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="217.0" y="122" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">多个独立身份各发请求</tspan></text>
+<text x="217.0" y="144" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">观察成功与售罄分布</tspan></text>
+<rect x="446" y="95" width="314" height="66" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="603.0" y="122" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">同一身份并发提交</tspan></text>
+<text x="603.0" y="144" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">观察限购、冲突与回滚</tspan></text>
+<text x="217" y="200" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="217" dy="0">真实注册会创建服务端账户</tspan></text>
+<text x="603" y="200" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="603" dy="0">不是所有失败都必然为 6104</tspan></text>
+<rect x="32" y="268" width="756" height="89" rx="6" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="298" text-anchor="start" font-size="15" font-weight="600" fill="#252A33"><tspan x="56" dy="0">客户端观察</tspan></text>
+<text x="257" y="296" text-anchor="start" font-size="14" font-weight="400" fill="#252A33"><tspan x="257" dy="0">成功响应次数 / 客户端 RT / 页面库存</tspan></text>
+<text x="257" y="326" text-anchor="start" font-size="12" font-weight="400" fill="#6B7280"><tspan x="257" dy="0">超时可能已提交；查询失败可能仍显示旧值</tspan></text>
+<rect x="32" y="376" width="756" height="89" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="56" y="406" text-anchor="start" font-size="15" font-weight="600" fill="#252A33"><tspan x="56" dy="0">数据库核对</tspan></text>
+<text x="257" y="404" text-anchor="start" font-size="14" font-weight="400" fill="#252A33"><tspan x="257" dy="0">已提交订单 / 唯一用户 / 一致库存观测</tspan></text>
+<text x="257" y="434" text-anchor="start" font-size="12" font-weight="400" fill="#6B7280"><tspan x="257" dy="0">限定同一轮、无外部购买或重置，并确认查询成功</tspan></text>
+<text x="410" y="507" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33"><tspan x="410" dy="0">剩余库存 + 本轮有效订单 = 初始库存（每单一件且观测前提成立）</tspan></text>
+<text x="410" y="534" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">客户端等式不是零超卖证明；Promise 同时启动也不等于服务端同时执行。</tspan></text>
+<text x="410" y="560" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 6｜并发演示的两种模式，以及观测结果的证据边界</tspan></text>
+</svg>

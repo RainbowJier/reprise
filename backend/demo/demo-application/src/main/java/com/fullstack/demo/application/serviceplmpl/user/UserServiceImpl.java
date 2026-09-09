@@ -1,4 +1,4 @@
-package com.fullstack.demo.application.user;
+package com.fullstack.demo.application.serviceplmpl.user;
 
 import com.fullstack.common.base.enums.ResultCodeEnum;
 import com.fullstack.common.base.exception.BusinessException;

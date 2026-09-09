@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 616" width="820" height="616" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 4｜同用户并发：唯一约束拒绝重复，事务撤销多余扣减</title>
+<desc id="figure-desc">假设同用户P和Q都通过预查且库存充足，两次扣减都曾成功。P建单提交，Q在插单时遇到商品用户唯一约束，业务异常向外传播使Q的扣减回滚。不是手工加回库存，也不代表所有失败都返回6104。</desc>
+<rect width="820" height="616" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="615" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<text x="410" y="45" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="410" dy="0">前提：同一用户、同一商品，都已通过预查且库存充足</tspan></text>
+<rect x="32" y="70" width="370" height="386" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="101" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="101" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">请求 P</tspan></text>
+<rect x="418" y="70" width="370" height="386" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="101" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="101" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">请求 Q</tspan></text>
+<rect x="60" y="133" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="217.0" y="160" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">条件扣减成功：影响 1 行</tspan></text>
+<text x="217.0" y="182" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">事务尚未提交</tspan></text>
+<rect x="446" y="133" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="603.0" y="160" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">条件扣减成功：影响 1 行</tspan></text>
+<text x="603.0" y="182" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">事务尚未提交</tspan></text>
+<line x1="217" y1="205" x2="217" y2="225" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<line x1="603" y1="205" x2="603" y2="225" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="60" y="233" width="314" height="64" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="217.0" y="260" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">订单写入成功</tspan></text>
+<text x="217.0" y="282" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">占用 UNIQUE(item_id, user_id)</tspan></text>
+<rect x="446" y="233" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="603.0" y="260" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">订单写入发生唯一冲突</tspan></text>
+<text x="603.0" y="282" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">转换为业务异常并向外抛出</tspan></text>
+<line x1="217" y1="305" x2="217" y2="325" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<line x1="603" y1="305" x2="603" y2="325" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="60" y="333" width="314" height="79" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="217.0" y="360" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">COMMIT</tspan></text>
+<text x="217.0" y="382" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">订单与一次扣减共同生效</tspan></text>
+<rect x="446" y="333" width="314" height="79" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="603.0" y="360" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">ROLLBACK</tspan></text>
+<text x="603.0" y="382" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">本事务多余扣减一并撤销</tspan></text>
+<rect x="32" y="486" width="756" height="72" rx="6" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="410" y="513" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410" dy="0">最终：一条订单 + 一次有效扣减</tspan></text>
+<text x="410" y="539" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">库存恢复靠回滚，不再手工加一；若 Q 先遇库存耗尽，可能返回 6103。</tspan></text>
+<text x="410" y="594" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 4｜同用户并发：唯一约束拒绝重复，事务撤销多余扣减</tspan></text>
+</svg>

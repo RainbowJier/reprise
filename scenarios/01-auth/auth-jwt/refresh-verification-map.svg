@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 560" width="820" height="560" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 9｜刷新测试：观察请求顺序，也验证失败与竞态</title>
+<desc id="figure-desc">上方为Network应看到的顺序：业务请求旧A0返回401，refreshR0返回A1R1，原请求用A1重试成功。下方为待验证场景和判据，包含刷新失败、类型混用、并发及重放失败；图不代表已执行测试结果。</desc>
+<rect width="820" height="560" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="559" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="756" height="154" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">Network 中的正常证据链</tspan></text>
+<rect x="52" y="93" width="204" height="62" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="154.0" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="154.0" dy="0">业务请求 / A0</tspan></text>
+<text x="154.0" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="154.0" dy="0">响应业务 401</tspan></text>
+<line x1="262" y1="124" x2="300" y2="124" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="308" y="93" width="204" height="62" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="410.0" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">刷新请求 / R0</tspan></text>
+<text x="410.0" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410.0" dy="0">响应 A1 + R1</tspan></text>
+<line x1="518" y1="124" x2="556" y2="124" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="564" y="93" width="204" height="62" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="666.0" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="666.0" dy="0">重试请求 / A1</tspan></text>
+<text x="666.0" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="666.0" dy="0">最终业务结果</tspan></text>
+<rect x="32" y="214" width="756" height="258" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="245" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">B</tspan></text>
+<text x="84" y="245" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">必须另外验证的边界</tspan></text>
+<text x="65" y="277" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="65" dy="0">refresh 无效 / 超时</tspan></text>
+<text x="356" y="277" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="356" dy="0">无递归；按错误类型提示</tspan></text>
+<line x1="52" y1="304" x2="768" y2="304" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="65" y="324" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="65" dy="0">access 冒充 refresh</tspan></text>
+<text x="356" y="324" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="356" dy="0">类型检查拒绝</tspan></text>
+<line x1="52" y1="351" x2="768" y2="351" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="65" y="371" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="65" dy="0">并发与晚到 401</tspan></text>
+<text x="356" y="371" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="356" dy="0">共享在飞任务；单独验证晚到行为</tspan></text>
+<line x1="52" y1="398" x2="768" y2="398" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="65" y="418" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="65" dy="0">重试仍失败 / 退出竞态</tspan></text>
+<text x="356" y="418" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="356" dy="0">一次上限；旧结果不应污染新会话</tspan></text>
+<text x="410" y="512" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">测试设计示意，不代表已执行结果；截图和日志不要暴露令牌原文。</tspan></text>
+<text x="410" y="538" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 9｜刷新测试：观察请求顺序，也验证失败与竞态</tspan></text>
+</svg>

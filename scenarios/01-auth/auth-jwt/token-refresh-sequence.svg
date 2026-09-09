@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 646" width="820" height="646" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 4｜一次自动续期：收到业务 401 后，换新并重试</title>
+<desc id="figure-desc">时序从上至下：客户端使用旧access访问业务接口，收到HTTP200中的业务401后用refresh请求认证服务，校验成功返回新对，先保存新对再带重试标记重发原请求。刷新等待的是客户端Promise，不是原HTTP连接。</desc>
+<rect width="820" height="646" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="645" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="56" y="30" width="192" height="52" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="152.0" y="61.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="152.0" dy="0">客户端 / 请求层</tspan></text>
+<line x1="152" y1="91" x2="152" y2="560" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+<rect x="304" y="30" width="192" height="52" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="400.0" y="61.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="400.0" dy="0">受保护业务</tspan></text>
+<line x1="400" y1="91" x2="400" y2="560" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+<rect x="572" y="30" width="192" height="52" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="668.0" y="61.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="668.0" dy="0">刷新端点</tspan></text>
+<line x1="668" y1="91" x2="668" y2="560" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+<line x1="152" y1="132" x2="400" y2="132" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="276.0" y="123" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="276.0" dy="0">① 原请求携带 A0</tspan></text>
+<line x1="400" y1="193" x2="152" y2="193" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="276.0" y="184" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="276.0" dy="0">② HTTP 200 / code=401</tspan></text>
+<text x="500" y="218" text-anchor="middle" font-size="11" font-weight="400" fill="#6B7280"><tspan x="500" dy="0">未执行业务</tspan></text>
+<line x1="152" y1="263" x2="668" y2="263" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="410.0" y="254" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="410.0" dy="0">③ refresh 请求仅携带 R0，不重新提交密码</tspan></text>
+<rect x="516" y="282" width="272" height="63" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="652" y="307" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="652" dy="0">④ 校验 R0</tspan></text>
+<text x="652" y="330" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="652" dy="0">签名 · exp · type=refresh</tspan></text>
+<line x1="668" y1="382" x2="152" y2="382" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="410.0" y="373" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="410.0" dy="0">⑤ 返回新 A1 + R1</tspan></text>
+<rect x="40" y="401" width="224" height="52" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="152" y="423" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="152" dy="0">⑥ 先保存新令牌对</tspan></text>
+<text x="152" y="442" text-anchor="middle" font-size="11" font-weight="400" fill="#6B7280"><tspan x="152" dy="0">再解除 Promise 等待</tspan></text>
+<line x1="152" y1="492" x2="400" y2="492" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="276.0" y="483" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="276.0" dy="0">⑦ 用 A1 重试，标记已重试</tspan></text>
+<line x1="400" y1="550" x2="152" y2="550" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="276.0" y="541" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="276.0" dy="0">⑧ 返回业务结果</tspan></text>
+<text x="410" y="587" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="410" dy="0">重试再次失败：不再循环刷新，将结果交回调用者。</tspan></text>
+<text x="410" y="624" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 4｜一次自动续期：收到业务 401 后，换新并重试</tspan></text>
+</svg>

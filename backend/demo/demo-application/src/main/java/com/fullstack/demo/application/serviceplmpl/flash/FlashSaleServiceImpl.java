@@ -1,4 +1,4 @@
-package com.fullstack.demo.application.flash;
+package com.fullstack.demo.application.serviceplmpl.flash;
 
 import com.fullstack.common.base.enums.ResultCodeEnum;
 import com.fullstack.common.base.exception.BusinessException;

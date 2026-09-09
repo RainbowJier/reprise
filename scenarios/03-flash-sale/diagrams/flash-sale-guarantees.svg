@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 566" width="820" height="566" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 1｜秒杀的目标：正确交易、可控失败与可信结果</title>
+<desc id="figure-desc">六个目标卡片：防超卖、每人限购、库存与订单同成同败、防少卖、处理超时结果未知，以及区分交易正确性、吞吐和公平性。</desc>
+<rect width="820" height="566" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="565" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">库存下限</tspan></text>
+<text x="56" y="103" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">不产生超出库存的购买名额</tspan></text>
+<line x1="56" y1="118" x2="378" y2="118" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="56" y="147" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="56" dy="0">条件扣减负责库存约束</tspan></text>
+<rect x="418" y="32" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">同用户限购</tspan></text>
+<text x="442" y="103" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="442" dy="0">同商品最多一条有效购买记录</tspan></text>
+<line x1="442" y1="118" x2="764" y2="118" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="442" y="147" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="442" dy="0">唯一约束负责去重</tspan></text>
+<rect x="32" y="191" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="222" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">C</tspan></text>
+<text x="84" y="222" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">库存与订单一致</tspan></text>
+<text x="56" y="262" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">有扣减才有订单，失败一起回滚</tspan></text>
+<line x1="56" y1="277" x2="378" y2="277" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="56" y="306" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="56" dy="0">两项数据库写入处于同一事务</tspan></text>
+<rect x="418" y="191" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="222" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">D</tspan></text>
+<text x="470" y="222" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">避免少卖</tspan></text>
+<text x="442" y="262" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="442" dy="0">有货时不被过时标记误拒绝</tspan></text>
+<line x1="442" y1="277" x2="764" y2="277" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="442" y="306" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="442" dy="0">回补后必须协调缓存状态</tspan></text>
+<rect x="32" y="350" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="381" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">E</tspan></text>
+<text x="84" y="381" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">结果可确认</tspan></text>
+<text x="56" y="421" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="56" dy="0">超时后仍需查询最终交易结果</tspan></text>
+<line x1="56" y1="436" x2="378" y2="436" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="56" y="465" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="56" dy="0">超时不等于服务端没有提交</tspan></text>
+<rect x="418" y="350" width="370" height="139" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="381" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">F</tspan></text>
+<text x="470" y="381" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">目标分开衡量</tspan></text>
+<text x="442" y="421" text-anchor="start" font-size="14" font-weight="600" fill="#252A33"><tspan x="442" dy="0">正确性、吞吐与公平性不是一回事</tspan></text>
+<line x1="442" y1="436" x2="764" y2="436" stroke="#D9DFE8" stroke-width="1.5" stroke-linecap="round"/>
+<text x="442" y="465" text-anchor="start" font-size="13" font-weight="400" fill="#6B7280"><tspan x="442" dy="0">最快点击不保证最先提交</tspan></text>
+<text x="410" y="544" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 1｜秒杀的目标：正确交易、可控失败与可信结果</tspan></text>
+</svg>

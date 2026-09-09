@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 548" width="820" height="548" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 5｜并发单飞：共用刷新结果，各自重试原请求</title>
+<desc id="figure-desc">P Q S三条业务请求在刷新任务F进行期间收到401，共享F。刷新成功先保存令牌再恢复各请求，三条请求各自重发。刷新结束清空共享引用，晚到401和跨标签页需要额外协调。</desc>
+<rect width="820" height="548" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="547" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="40" y="40" width="220" height="58" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="150.0" y="74.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="150.0" dy="0">请求 P → 401</tspan></text>
+<line x1="150" y1="106" x2="150" y2="153" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<rect x="300" y="40" width="220" height="58" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="410.0" y="74.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">请求 Q → 401</tspan></text>
+<line x1="410" y1="106" x2="410" y2="153" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<rect x="560" y="40" width="220" height="58" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="670.0" y="74.0" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="670.0" dy="0">请求 S → 401</tspan></text>
+<line x1="670" y1="106" x2="670" y2="153" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="150" y1="153" x2="670" y2="153" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="410" y1="153" x2="410" y2="193" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="180" y="184" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="180" dy="0">首个创建</tspan></text>
+<text x="646" y="184" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="646" dy="0">其余等待</tspan></text>
+<rect x="235" y="201" width="350" height="80" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="410.0" y="228" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">共享刷新任务 F</tspan></text>
+<text x="410.0" y="250" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410.0" dy="0">进行期间共用；失败时等待者均获错误</tspan></text>
+<line x1="410" y1="289" x2="410" y2="321" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="150" y1="321" x2="670" y2="321" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round"/>
+<text x="626" y="302" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="626" dy="0">成功：先保存 A1 + R1</tspan></text>
+<line x1="150" y1="321" x2="150" y2="353" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="40" y="361" width="220" height="67" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="150.0" y="388" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="150.0" dy="0">P 使用 A1 重试</tspan></text>
+<text x="150.0" y="410" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="150.0" dy="0">返回 P 的结果</tspan></text>
+<line x1="410" y1="321" x2="410" y2="353" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="300" y="361" width="220" height="67" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="410.0" y="388" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">Q 使用 A1 重试</tspan></text>
+<text x="410.0" y="410" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410.0" dy="0">返回 Q 的结果</tspan></text>
+<line x1="670" y1="321" x2="670" y2="353" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="560" y="361" width="220" height="67" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="670.0" y="388" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="670.0" dy="0">S 使用 A1 重试</tspan></text>
+<text x="670.0" y="410" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="670.0" dy="0">返回 S 的结果</tspan></text>
+<rect x="40" y="454" width="740" height="46" rx="6" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="410" y="482" text-anchor="middle" font-size="13" font-weight="400" fill="#252A33"><tspan x="410" dy="0">边界：F 结束即清引用；晚到 401 与其他标签页不自动合并。</tspan></text>
+<text x="410" y="526" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 5｜并发单飞：共用刷新结果，各自重试原请求</tspan></text>
+</svg>

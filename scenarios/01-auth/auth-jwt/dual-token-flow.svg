@@ -1,118 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 420" width="820" height="420"
-     font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">
-  <rect width="820" height="420" fill="#FFFFFF"/>
-  <rect x="0.5" y="0.5" width="819" height="419" fill="none" stroke="#D9DFE8"/>
-  <defs>
-    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/>
-    </marker>
-    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#00A087"/>
-    </marker>
-    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#E64B35"/>
-    </marker>
-  </defs>
-
-  <!-- ===== 第一行：正常链路（深蓝） ===== -->
-  <g stroke-width="1.5">
-    <rect x="60"  y="56" width="128" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="203" y="56" width="128" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="346" y="56" width="128" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="489" y="56" width="128" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="632" y="56" width="128" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-  </g>
-  <g text-anchor="middle" font-size="14" font-weight="500" fill="#252A33">
-    <text x="124" y="77">登录成功</text>
-    <text x="267" y="77">签发双token</text>
-    <text x="410" y="77">存localStorage</text>
-    <text x="553" y="77">携带 Bearer 头</text>
-    <text x="696" y="77">过滤器验签</text>
-  </g>
-  <g text-anchor="middle" font-size="11" fill="#6B7280">
-    <text x="124" y="95">POST /auth/login</text>
-    <text x="267" y="95">30 分钟 / 7 天</text>
-    <text x="410" y="95">localStorage</text>
-    <text x="553" y="95">Authorization</text>
-    <text x="696" y="95">HS256 验签</text>
-  </g>
-  <g stroke="#5A6472" stroke-width="1.5">
-    <line x1="190" y1="82" x2="199" y2="82" marker-end="url(#arrowGray)"/>
-    <line x1="333" y1="82" x2="342" y2="82" marker-end="url(#arrowGray)"/>
-    <line x1="476" y1="82" x2="485" y2="82" marker-end="url(#arrowGray)"/>
-    <line x1="619" y1="82" x2="628" y2="82" marker-end="url(#arrowGray)"/>
-  </g>
-
-  <!-- ===== 分支：通过（青绿，左）/ 失败（红，右） ===== -->
-  <path d="M696,108 L696,132 L130,132 L130,172" fill="none" stroke="#00A087" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
-  <text x="410" y="127" text-anchor="middle" font-size="11" fill="#6B7280">通过</text>
-  <path d="M696,108 L696,148 L530,148 L530,172" fill="none" stroke="#E64B35" stroke-width="1.5" marker-end="url(#arrowRed)"/>
-  <text x="615" y="143" text-anchor="middle" font-size="11" fill="#6B7280">失败</text>
-
-  <!-- 成功支路（青绿） -->
-  <g stroke-width="1.5">
-    <rect x="60"  y="176" width="140" height="52" rx="8" fill="#00A087" fill-opacity="0.12" stroke="#00A087"/>
-    <rect x="230" y="176" width="150" height="52" rx="8" fill="#00A087" fill-opacity="0.12" stroke="#00A087"/>
-  </g>
-  <g text-anchor="middle" font-size="14" font-weight="500" fill="#252A33">
-    <text x="130" y="197">验签通过</text>
-    <text x="305" y="197">返回业务数据</text>
-  </g>
-  <g text-anchor="middle" font-size="11" fill="#6B7280">
-    <text x="130" y="215">注入 ThreadLocal</text>
-    <text x="305" y="215">统一响应 code=200</text>
-  </g>
-  <line x1="200" y1="202" x2="226" y2="202" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrowGray)"/>
-
-  <!-- 失败支路（红） -->
-  <g stroke-width="1.5">
-    <rect x="455" y="176" width="150" height="52" rx="8" fill="#E64B35" fill-opacity="0.10" stroke="#E64B35"/>
-    <rect x="625" y="176" width="155" height="52" rx="8" fill="#E64B35" fill-opacity="0.10" stroke="#E64B35"/>
-  </g>
-  <g text-anchor="middle" font-size="14" font-weight="500" fill="#252A33">
-    <text x="530" y="197">验签失败</text>
-    <text x="702" y="197">响应 code 401</text>
-  </g>
-  <g text-anchor="middle" font-size="11" fill="#6B7280">
-    <text x="530" y="215">缺失/过期/伪造</text>
-    <text x="702" y="215">HTTP 200 承载</text>
-  </g>
-  <line x1="605" y1="202" x2="621" y2="202" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrowGray)"/>
-
-  <!-- ===== 401 下降到续期回路 ===== -->
-  <path d="M702,228 L702,250 L135,250 L135,268" fill="none" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrowGray)"/>
-
-  <!-- 续期回路（深蓝 + 终点红） -->
-  <g stroke-width="1.5">
-    <rect x="60"  y="272" width="150" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="230" y="272" width="160" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="410" y="272" width="130" height="52" rx="8" fill="#3C5488" fill-opacity="0.12" stroke="#3C5488"/>
-    <rect x="560" y="272" width="160" height="52" rx="8" fill="#E64B35" fill-opacity="0.10" stroke="#E64B35"/>
-  </g>
-  <g text-anchor="middle" font-size="14" font-weight="500" fill="#252A33">
-    <text x="135" y="293">挂起原请求</text>
-    <text x="310" y="293">旋转双发新token</text>
-    <text x="475" y="293">重放原请求</text>
-    <text x="640" y="293">清空·跳转登录</text>
-  </g>
-  <g text-anchor="middle" font-size="11" fill="#6B7280">
-    <text x="135" y="311">单飞 /auth/refresh</text>
-    <text x="310" y="311">旧 token 自然过期</text>
-    <text x="475" y="311">用户无感知</text>
-    <text x="640" y="311">refresh 已失效</text>
-  </g>
-  <g stroke="#5A6472" stroke-width="1.5">
-    <line x1="210" y1="298" x2="226" y2="298" marker-end="url(#arrowGray)"/>
-    <line x1="390" y1="298" x2="406" y2="298" marker-end="url(#arrowGray)"/>
-  </g>
-
-  <!-- 重放反馈回路（青绿虚线） -->
-  <path d="M475,272 C 445,205 480,140 549,116" fill="none" stroke="#00A087" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrowTeal)"/>
-  <text x="440" y="160" text-anchor="end" font-size="11" fill="#6B7280">新 token 重放请求</text>
-
-  <!-- 刷新失败分支（红虚线） -->
-  <path d="M310,324 L310,344 L640,344 L640,330" fill="none" stroke="#E64B35" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrowRed)"/>
-  <text x="475" y="340" text-anchor="middle" font-size="11" fill="#6B7280">刷新失败</text>
-
-  <text x="410" y="396" text-anchor="middle" font-size="12" fill="#6B7280">图 1｜双 token 生命周期与 401 无感续期</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 468" width="820" height="468" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 3｜双 token 分工：access 访问，refresh 续期</title>
+<desc id="figure-desc">access 每次访问受保护资源时使用；refresh 只在续期时发送。30分钟与7天是示例有效期。access到期并不会自动定时刷新，下一次请求遇到认证失败后才按需续期。</desc>
+<rect width="820" height="468" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="467" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="370" height="230" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">access token</tspan></text>
+<rect x="418" y="32" width="370" height="230" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">refresh token</tspan></text>
+<rect x="61" y="93" width="312" height="63" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="217.0" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">访问受保护业务</tspan></text>
+<text x="217.0" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">示例有效期：30 分钟</tspan></text>
+<rect x="447" y="93" width="312" height="63" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="603.0" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">换取新的令牌对</tspan></text>
+<text x="603.0" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">示例有效期：7 天</tspan></text>
+<text x="217" y="193" text-anchor="middle" font-size="14" font-weight="400" fill="#252A33"><tspan x="217" dy="0">Authorization: Bearer A0</tspan></text>
+<text x="217" y="223" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="217" dy="0">频繁使用 · type=access</tspan></text>
+<text x="603" y="193" text-anchor="middle" font-size="14" font-weight="400" fill="#252A33"><tspan x="603" dy="0">POST /auth/refresh 携带 R0</tspan></text>
+<text x="603" y="223" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="603" dy="0">仅续期时使用 · type=refresh</tspan></text>
+<rect x="32" y="300" width="232" height="67" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="148.0" y="327" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="148.0" dy="0">A0 到期</tspan></text>
+<text x="148.0" y="349" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="148.0" dy="0">没有请求就不触发</tspan></text>
+<rect x="294" y="300" width="232" height="67" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="410.0" y="327" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">业务请求返回 401</tspan></text>
+<text x="410.0" y="349" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410.0" dy="0">判断是否允许续期</tspan></text>
+<rect x="556" y="300" width="232" height="67" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="672.0" y="327" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="672.0" dy="0">R0 换出 A1 + R1</tspan></text>
+<text x="672.0" y="349" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="672.0" dy="0">保存新对，再重试</tspan></text>
+<line x1="271" y1="333" x2="287" y2="333" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<line x1="533" y1="333" x2="549" y2="333" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="410" y="412" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="410" dy="0">不能互换使用；刷新是重新签发，不是修改旧 JWT。</tspan></text>
+<text x="410" y="446" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 3｜双 token 分工：access 访问，refresh 续期</tspan></text>
 </svg>

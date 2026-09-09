@@ -80,8 +80,7 @@ public class JwtTokenProvider implements TokenProvider {
             if (!expectedType.equals(type)) {
                 throw new BusinessException(ResultCodeEnum.UNAUTHORIZED, "token 类型不正确");
             }
-            return new LoginUser(Long.valueOf(claims.getSubject()),
-                    claims.get(AuthConstants.CLAIM_USERNAME, String.class));
+            return new LoginUser(Long.valueOf(claims.getSubject()), claims.get(AuthConstants.CLAIM_USERNAME, String.class));
         } catch (JwtException | IllegalArgumentException e) {
             // 只记录异常摘要，不落 token 原文
             log.warn("JWT 解析失败：{}", e.getMessage());

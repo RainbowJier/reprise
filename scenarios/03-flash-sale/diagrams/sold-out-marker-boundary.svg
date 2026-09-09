@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 574" width="820" height="574" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 5｜售罄标记：缺失增加压力，过时可能造成少卖</title>
+<desc id="figure-desc">按商品查询、时间检查、本地标记检查的顺序，命中标记仅省后续查重和写入。标记缺失时由数据库拒绝无库存请求；库存恢复但标记仍为true则产生少卖。标记不跨实例共享，无自动TTL，也不随事务回滚。</desc>
+<rect width="820" height="574" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="573" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="35" width="232" height="66" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="148.0" y="62" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="148.0" dy="0">先查询商品</tspan></text>
+<text x="148.0" y="84" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="148.0" dy="0">已经访问数据库</tspan></text>
+<line x1="272" y1="68" x2="286" y2="68" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="294" y="35" width="232" height="66" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="410.0" y="62" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="410.0" dy="0">再检查活动时间</tspan></text>
+<text x="410.0" y="84" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410.0" dy="0">校验时间窗口</tspan></text>
+<line x1="534" y1="68" x2="548" y2="68" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="556" y="35" width="232" height="66" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="672.0" y="62" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="672.0" dy="0">然后检查本地标记</tspan></text>
+<text x="672.0" y="84" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="672.0" dy="0">true 则提前返回</tspan></text>
+<text x="410" y="137" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33"><tspan x="410" dy="0">命中标记可省掉后续查重、扣减和插单，并非完全不触库。</tspan></text>
+<rect x="32" y="171" width="370" height="251" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="202" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="202" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">实际售罄，标记缺失</tspan></text>
+<rect x="418" y="171" width="370" height="251" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="202" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="202" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">库存回满，标记仍为 true</tspan></text>
+<rect x="60" y="234" width="314" height="65" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="217.0" y="261" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">请求继续到条件扣减</tspan></text>
+<text x="217.0" y="283" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">数据库拒绝无库存的请求</tspan></text>
+<rect x="446" y="234" width="314" height="65" rx="6" fill="#E64B35" fill-opacity="0.1" stroke="#E64B35" stroke-width="1.5"/>
+<text x="603.0" y="261" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">请求在标记处被拒绝</tspan></text>
+<text x="603.0" y="283" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">有库存却不能购买</tspan></text>
+<text x="217" y="337" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="217" dy="0">影响：更多数据库访问</tspan></text>
+<text x="217" y="370" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="217" dy="0">底层库存约束仍须存在</tspan></text>
+<text x="603" y="337" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="603" dy="0">影响：少卖与实例间差异</tspan></text>
+<text x="603" y="370" text-anchor="middle" font-size="13" font-weight="400" fill="#6B7280"><tspan x="603" dy="0">回补必须协调标记失效</tspan></text>
+<rect x="32" y="452" width="756" height="62" rx="6" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="410" y="478" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="410" dy="0">进程内状态：不跨实例共享，不自动参与数据库回滚。</tspan></text>
+<text x="410" y="499" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">普通映射没有自动 TTL；重启清内存不等于重置外部数据库。</tspan></text>
+<text x="410" y="552" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 5｜售罄标记：缺失增加压力，过时可能造成少卖</tspan></text>
+</svg>

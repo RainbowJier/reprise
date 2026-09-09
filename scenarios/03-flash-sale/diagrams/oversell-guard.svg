@@ -1,83 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" width="820" height="400"
-     font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif">
-  <rect width="820" height="400" fill="#FFFFFF"/>
-  <rect x="0.5" y="0.5" width="819" height="399" fill="none" stroke="#D9DFE8"/>
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/>
-    </marker>
-  </defs>
-
-  <!-- 面板 A：check-then-act -->
-  <rect x="40" y="40" width="360" height="300" rx="10" fill="#FFFFFF" stroke="#D9DFE8"/>
-  <text x="64" y="72" font-size="18" font-weight="700" fill="#3C5488">A</text>
-  <text x="86" y="71" font-size="14" font-weight="600" fill="#252A33">check-then-act 先查再改</text>
-
-  <text x="153" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T1</text>
-  <text x="295" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T2</text>
-
-  <g fill="#FFFFFF" stroke="#3C5488" stroke-width="1.5">
-    <rect x="88"  y="104" width="130" height="34" rx="6" fill-opacity="1"/>
-    <rect x="230" y="104" width="130" height="34" rx="6"/>
-    <rect x="88"  y="150" width="130" height="34" rx="6"/>
-    <rect x="230" y="150" width="130" height="34" rx="6"/>
-    <rect x="88"  y="196" width="130" height="34" rx="6"/>
-    <rect x="230" y="196" width="130" height="34" rx="6"/>
-  </g>
-  <g text-anchor="middle" font-size="12" fill="#252A33">
-    <text x="153" y="125">SELECT 得 1</text>
-    <text x="295" y="125">SELECT 得 1</text>
-    <text x="153" y="171">判断 1 &gt; 0 通过</text>
-    <text x="295" y="171">判断 1 &gt; 0 通过</text>
-    <text x="153" y="217">UPDATE 扣 1</text>
-    <text x="295" y="217">UPDATE 扣 1</text>
-  </g>
-
-  <g stroke="#5A6472" stroke-width="1.5">
-    <line x1="153" y1="230" x2="200" y2="254" marker-end="url(#arrow)"/>
-    <line x1="295" y1="230" x2="248" y2="254" marker-end="url(#arrow)"/>
-  </g>
-
-  <rect x="120" y="258" width="200" height="40" rx="6" fill="#E64B35" fill-opacity="0.10" stroke="#E64B35" stroke-width="1.5"/>
-  <text x="220" y="283" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">stock = -1 · 超卖</text>
-  <text x="220" y="322" text-anchor="middle" font-size="11" fill="#6B7280">判断与扣减之间的竞态窗口被并发踩中</text>
-
-  <!-- 面板 B：原子条件更新 -->
-  <rect x="420" y="40" width="360" height="300" rx="10" fill="#FFFFFF" stroke="#D9DFE8"/>
-  <text x="444" y="72" font-size="18" font-weight="700" fill="#3C5488">B</text>
-  <text x="466" y="71" font-size="14" font-weight="600" fill="#252A33">原子条件更新（一条语句）</text>
-
-  <text x="533" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T1</text>
-  <text x="675" y="96" text-anchor="middle" font-size="12" fill="#6B7280">线程 T2</text>
-
-  <g fill="#FFFFFF" stroke="#3C5488" stroke-width="1.5">
-    <rect x="468" y="102" width="130" height="44" rx="6"/>
-    <rect x="610" y="102" width="130" height="44" rx="6"/>
-    <rect x="468" y="156" width="130" height="34" rx="6"/>
-    <rect x="610" y="156" width="130" height="34" rx="6"/>
-  </g>
-  <g text-anchor="middle" fill="#252A33">
-    <text x="533" y="120" font-size="11">UPDATE stock-1</text>
-    <text x="533" y="136" font-size="11">WHERE stock &gt; 0</text>
-    <text x="675" y="120" font-size="11">UPDATE stock-1</text>
-    <text x="675" y="136" font-size="11">WHERE stock &gt; 0</text>
-    <text x="533" y="177" font-size="12">影响行数 = 1</text>
-    <text x="675" y="177" font-size="12">影响行数 = 0</text>
-  </g>
-
-  <rect x="468" y="200" width="130" height="34" rx="6" fill="#00A087" fill-opacity="0.10" stroke="#00A087" stroke-width="1.5"/>
-  <text x="533" y="221" text-anchor="middle" font-size="12" fill="#252A33">下单成功</text>
-  <rect x="610" y="200" width="130" height="34" rx="6" fill="#8491B4" fill-opacity="0.10" stroke="#8491B4" stroke-width="1.5"/>
-  <text x="675" y="221" text-anchor="middle" font-size="12" fill="#252A33">拒绝 · 已售罄</text>
-
-  <g stroke="#5A6472" stroke-width="1.5">
-    <line x1="533" y1="234" x2="580" y2="254" marker-end="url(#arrow)"/>
-    <line x1="675" y1="234" x2="628" y2="254" marker-end="url(#arrow)"/>
-  </g>
-
-  <rect x="500" y="258" width="200" height="40" rx="6" fill="#00A087" fill-opacity="0.10" stroke="#00A087" stroke-width="1.5"/>
-  <text x="600" y="283" text-anchor="middle" font-size="13" font-weight="600" fill="#252A33">stock = 0 · 恰好卖完</text>
-  <text x="600" y="322" text-anchor="middle" font-size="11" fill="#6B7280">单行更新被数据库串行执行，无竞态窗口</text>
-
-  <text x="410" y="376" text-anchor="middle" font-size="12" fill="#6B7280">图 2｜防超卖核心：先查再改存在竞态窗口，原子条件更新把判断与扣减合并为一步</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 566" width="820" height="566" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif" role="img" aria-labelledby="figure-title figure-desc">
+<title id="figure-title">图 3｜先查再改的竞态，与条件 UPDATE 的库存约束</title>
+<desc id="figure-desc">在初始库存为1、商品有效且无其他写入的假设下，两请求先读再无条件减可能扣成负数。条件UPDATE将stock大于0与扣减一起执行，数据库协调并发写入；图示成功分支还需订单写入和事务提交。</desc>
+<rect width="820" height="566" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="819" height="565" fill="none" stroke="#D9DFE8"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A6472"/></marker></defs>
+<rect x="32" y="32" width="370" height="398" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="56" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="56" dy="0">A</tspan></text>
+<text x="84" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="84" dy="0">先查再无条件减</tspan></text>
+<rect x="418" y="32" width="370" height="398" rx="10" fill="#F4F7FA" fill-opacity="1" stroke="#D9DFE8" stroke-width="1"/>
+<text x="442" y="63" text-anchor="start" font-size="18" font-weight="600" fill="#3C5488"><tspan x="442" dy="0">B</tspan></text>
+<text x="470" y="63" text-anchor="start" font-size="16" font-weight="600" fill="#252A33"><tspan x="470" dy="0">条件 UPDATE</tspan></text>
+<rect x="60" y="96" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="217.0" y="123" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">P、Q 都查到 stock=1</tspan></text>
+<text x="217.0" y="145" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">应用层分别判断库存大于 0</tspan></text>
+<rect x="446" y="96" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="603.0" y="123" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">P、Q 请求同一条条件写入</tspan></text>
+<text x="603.0" y="145" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">UPDATE … WHERE stock &gt; 0</tspan></text>
+<line x1="217" y1="168" x2="217" y2="188" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<line x1="603" y1="168" x2="603" y2="188" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="60" y="197" width="314" height="64" rx="6" fill="#3C5488" fill-opacity="0.1" stroke="#3C5488" stroke-width="1.5"/>
+<text x="217.0" y="224" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">P 无条件减一并提交</tspan></text>
+<text x="217.0" y="246" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">库存从 1 变为 0</tspan></text>
+<rect x="446" y="197" width="314" height="64" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="603.0" y="224" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">P 扣减 1 行并完成事务</tspan></text>
+<text x="603.0" y="246" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">库存从 1 变为 0</tspan></text>
+<line x1="217" y1="269" x2="217" y2="289" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<line x1="603" y1="269" x2="603" y2="289" stroke="#5A6472" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="60" y="298" width="314" height="78" rx="6" fill="#E64B35" fill-opacity="0.1" stroke="#E64B35" stroke-width="1.5"/>
+<text x="217.0" y="325" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="217.0" dy="0">Q 仍继续无条件减一</tspan></text>
+<text x="217.0" y="347" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="217.0" dy="0">库存变成 -1：超卖</tspan></text>
+<rect x="446" y="298" width="314" height="78" rx="6" fill="#00A087" fill-opacity="0.1" stroke="#00A087" stroke-width="1.5"/>
+<text x="603.0" y="325" text-anchor="middle" font-size="15" font-weight="600" fill="#252A33"><tspan x="603.0" dy="0">Q 得到 0 行，不建单</tspan></text>
+<text x="603.0" y="347" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="603.0" dy="0">无匹配库存，本次没有扣减</tspan></text>
+<text x="410" y="470" text-anchor="middle" font-size="14" font-weight="600" fill="#252A33"><tspan x="410" dy="0">条件写入仍依赖数据库锁与事务机制，不是“无锁”。</tspan></text>
+<text x="410" y="506" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">示意前提：商品有效、初始库存 1、无其他写入；成功路径还要提交订单。</tspan></text>
+<text x="410" y="544" text-anchor="middle" font-size="12" font-weight="400" fill="#6B7280"><tspan x="410" dy="0">图 3｜先查再改的竞态，与条件 UPDATE 的库存约束</tspan></text>
 </svg>
